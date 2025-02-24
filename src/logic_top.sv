@@ -1,0 +1,88 @@
+module logic_top (
+    clk_27M,
+    rst,
+    buttons,
+    switches,
+    leds,
+
+    tmds_clk_p,
+    tmds_clk_n,
+    tmds_data_p,
+    tmds_data_n
+);
+
+// Parameters
+
+parameter HOR_ACTIVE_PIXELS      = 1280;
+parameter VER_ACTIVE_PIXELS      = 720;
+
+localparam X_WIDTH = $clog2(HOR_ACTIVE_PIXELS);
+localparam Y_WIDTH = $clog2(VER_ACTIVE_PIXELS);
+
+// Ports
+
+input        clk_27M;
+input        rst;
+input  [4:0] buttons;
+input  [3:0] switches;
+output [5:0] leds;
+output       tmds_clk_p, tmds_clk_n;
+output [2:0] tmds_data_p, tmds_data_n;
+
+// Wires/regs
+
+wire       clk_rgb;
+wire [7:0] r, g, b;
+wire       hs, vs, de;
+
+wire [X_WIDTH-1:0] x;
+wire [Y_WIDTH-1:0] y;
+
+// Assignments
+
+assign leds = 6'b000111 ^ buttons;
+
+// Modules
+
+rgb_clock_pll rgb_clock_pll_inst (
+    .clkout(clk_rgb), //output clkout
+    .reset(rst),      //input reset
+    .clkin(clk_27M)   //input clkin
+);
+
+dvi_tx dvi_tx_inst (
+    .I_rst_n(!rst),              //input I_rst_n
+    .I_rgb_clk(clk_rgb),         //input I_rgb_clk
+    .I_rgb_vs(vs),               //input I_rgb_vs
+    .I_rgb_hs(hs),               //input I_rgb_hs
+    .I_rgb_de(de),               //input I_rgb_de
+    .I_rgb_r(r),                 //input [7:0] I_rgb_r
+    .I_rgb_g(g),                 //input [7:0] I_rgb_g
+    .I_rgb_b(b),                 //input [7:0] I_rgb_b
+    .O_tmds_clk_p(tmds_clk_p),   //output O_tmds_clk_p
+    .O_tmds_clk_n(tmds_clk_n),   //output O_tmds_clk_n
+    .O_tmds_data_p(tmds_data_p), //output [2:0] O_tmds_data_p
+    .O_tmds_data_n(tmds_data_n)  //output [2:0] O_tmds_data_n
+);
+
+pixel_iterator pixel_iterator_inst (
+    .clk_rgb,
+    .rst,
+    .x,
+    .y,
+    .hs,
+    .vs,
+    .de
+);
+
+video_test video_test_inst (
+    .x,
+    .y,
+    .r,
+    .g,
+    .b
+);
+
+// Processes
+
+endmodule

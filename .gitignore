@@ -1,0 +1,8 @@
+*.user
+*.vo
+*.mod
+
+/impl/*
+!/impl/flappy_bird_process_config.json
+
+/src/dvi_tx/temp
