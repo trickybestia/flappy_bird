@@ -32,7 +32,8 @@ output [2:0] tmds_data_p, tmds_data_n;
 // Wires/regs
 
 wire       clk_rgb;
-wire [7:0] r, g, b;
+wire [7:0] r_test, g_test, b_test; // RGB from video_test
+reg  [7:0] r, g, b;                // RGB out
 wire       hs, vs, de;
 
 wire [X_WIDTH-1:0] x;
@@ -78,11 +79,26 @@ pixel_iterator pixel_iterator_inst (
 video_test video_test_inst (
     .x,
     .y,
-    .r,
-    .g,
-    .b
+    .r(r_test),
+    .g(g_test),
+    .b(b_test)
 );
 
 // Processes
+
+always_comb begin
+    case (switches)
+        1: begin
+            r = r_test;
+            g = g_test;
+            b = b_test;
+        end
+        default: begin
+            r = '0;
+            g = '0;
+            b = '0;
+        end
+    endcase
+end
 
 endmodule
