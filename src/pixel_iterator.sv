@@ -10,17 +10,17 @@ module pixel_iterator (
 
 // Parameters
 
-parameter HOR_TOTAL_PIXELS       = 1650;
-parameter HOR_ACTIVE_PIXELS      = 1280;
-parameter HOR_BACK_PORCH_PIXELS  = 220;
-parameter HOR_FRONT_PORCH_PIXELS = 110;
-parameter HOR_SYNC_PIXELS        = 40;
+parameter HOR_TOTAL_PIXELS;
+parameter HOR_ACTIVE_PIXELS;
+parameter HOR_BACK_PORCH_PIXELS;
+parameter HOR_FRONT_PORCH_PIXELS;
+parameter HOR_SYNC_PIXELS;
 
-parameter VER_TOTAL_PIXELS       = 750;
-parameter VER_ACTIVE_PIXELS      = 720;
-parameter VER_BACK_PORCH_PIXELS  = 20;
-parameter VER_FRONT_PORCH_PIXELS = 5;
-parameter VER_SYNC_PIXELS        = 5;
+parameter VER_TOTAL_PIXELS;
+parameter VER_ACTIVE_PIXELS;
+parameter VER_BACK_PORCH_PIXELS;
+parameter VER_FRONT_PORCH_PIXELS;
+parameter VER_SYNC_PIXELS;
 
 localparam X_WIDTH = $clog2(HOR_ACTIVE_PIXELS);
 localparam Y_WIDTH = $clog2(VER_ACTIVE_PIXELS);

@@ -8,8 +8,8 @@ module video_test (
 
 // Parameters
 
-parameter HOR_ACTIVE_PIXELS = 1280;
-parameter VER_ACTIVE_PIXELS = 720;
+parameter HOR_ACTIVE_PIXELS;
+parameter VER_ACTIVE_PIXELS;
 
 localparam X_WIDTH = $clog2(HOR_ACTIVE_PIXELS);
 localparam Y_WIDTH = $clog2(VER_ACTIVE_PIXELS);
