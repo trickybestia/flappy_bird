@@ -1,10 +1,9 @@
-module logic_top (
+module top (
     clk_27M,
-    rst,
 
-    buttons,
+    buttons_n,
     switches,
-    leds,
+    leds_n,
 
     tmds_clk_p,
     tmds_clk_n,
@@ -48,11 +47,10 @@ localparam Y_WIDTH = $clog2(VER_ACTIVE_PIXELS);
 // Ports
 
 input        clk_27M;
-input        rst;
 
-input  [4:0] buttons;
+input  [4:0] buttons_n;
 input  [3:0] switches;
-output [5:0] leds;
+output [5:0] leds_n;
 
 output       tmds_clk_p, tmds_clk_n;
 output [2:0] tmds_data_p, tmds_data_n;
@@ -75,6 +73,8 @@ inout  [2-1:0]  ddr_dqs_n;      //DQS_WIDTH=2
 
 // Wires/regs
 
+wire rst_n;
+
 wire       clk_rgb;
 wire [7:0] r_test, g_test, b_test; // RGB from video_test
 reg  [7:0] r, g, b;                // RGB out
@@ -87,7 +87,8 @@ wire pll_lock;
 
 // Assignments
 
-assign leds = 6'b000111 ^ buttons;
+assign rst_n = buttons_n[0];
+assign leds_n = 6'b000111 ^ buttons_n;
 assign ddr_cs = 1'b0;
 
 // Modules
@@ -95,12 +96,12 @@ assign ddr_cs = 1'b0;
 rgb_clock_pll rgb_clock_pll_inst (
     .clkout(clk_rgb), //output clkout
     .lock(pll_lock),  //output lock
-    .reset(rst),      //input reset
+    .reset(!rst_n),   //input reset
     .clkin(clk_27M)   //input clkin
 );
 
 dvi_tx dvi_tx_inst (
-    .I_rst_n(!rst),              //input I_rst_n
+    .I_rst_n(rst_n),             //input I_rst_n
     .I_rgb_clk(clk_rgb),         //input I_rgb_clk
     .I_rgb_vs(vs),               //input I_rgb_vs
     .I_rgb_hs(hs),               //input I_rgb_hs
@@ -127,7 +128,7 @@ pixel_iterator #(
     .VER_SYNC_PIXELS(VER_SYNC_PIXELS)
 ) pixel_iterator_inst (
     .clk_rgb,
-    .rst,
+    .rst_n,
     .x,
     .y,
     .hs,
