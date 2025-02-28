@@ -1,19 +1,19 @@
 //Copyright (C)2014-2024 Gowin Semiconductor Corporation.
 //All rights reserved.
 //File Title: IP file
-//Tool Version: V1.9.10
+//Tool Version: V1.9.11
 //Part Number: GW2A-LV18PG256C8/I7
 //Device: GW2A-18
 //Device Version: C
-//Created Time: Mon Feb 24 13:11:55 2025
+//Created Time: Fri Feb 28 10:31:06 2025
 
-module rgb_clock_pll (clkout, reset, clkin);
+module rgb_clock_pll (clkout, lock, reset, clkin);
 
 output clkout;
+output lock;
 input reset;
 input clkin;
 
-wire lock_o;
 wire clkoutp_o;
 wire clkoutd_o;
 wire clkoutd3_o;
@@ -23,7 +23,7 @@ assign gw_gnd = 1'b0;
 
 rPLL rpll_inst (
     .CLKOUT(clkout),
-    .LOCK(lock_o),
+    .LOCK(lock),
     .CLKOUTP(clkoutp_o),
     .CLKOUTD(clkoutd_o),
     .CLKOUTD3(clkoutd3_o),
