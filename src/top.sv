@@ -131,15 +131,16 @@ pixel_iterator #(
 );
 
 frame_buffer frame_buffer_inst (
-    .clk(clk_rgb),
     .rst,
     .ce,
-    .swap,
+    .wr_clk(clk_rgb),
     .wr_en(buttons[1] | buttons[2]),
     .wr_addr(y * HOR_ACTIVE_PIXELS + x),
     .wr_data(buttons[1]),
+    .rd_clk(clk_rgb),
     .rd_addr(y * HOR_ACTIVE_PIXELS + x),
-    .rd_data(frame_buffer_rd_data)
+    .rd_data(frame_buffer_rd_data),
+    .swap
 );
 
 video_test #(

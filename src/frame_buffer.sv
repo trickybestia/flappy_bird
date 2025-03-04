@@ -1,34 +1,34 @@
 module frame_buffer (
-    clk,
     rst,
     ce,
 
-    swap,
-
+    wr_clk,
     wr_en,
     wr_addr,
     wr_data,
 
+    rd_clk,
     rd_addr,
-    rd_data
+    rd_data,
+    swap
 );
 
 // Parameters
 
 // Ports
 
-input clk;
 input rst;
 input ce;
 
-input swap;
-
+input        wr_clk;
 input        wr_en;
 input [18:0] wr_addr;
 input        wr_data;
 
+input         rd_clk;
 input  [18:0] rd_addr;
 output        rd_data;
+input         swap;
 
 // Wires/regs
 
@@ -45,11 +45,11 @@ assign rd_data = selected_buf == 1'b0 ? buf0_rd_data : buf1_rd_data;
 
 frame_buffer_mem buf0 (
     .dout(buf0_rd_data),                     //output [0:0] dout
-    .clka(clk),                              //input clka
+    .clka(wr_clk),                           //input clka
     .cea(ce & wr_en & selected_buf == 1'b1), //input cea
     .reseta(rst),                            //input reseta
-    .clkb(clk),                              //input clkb
-    .ceb(ce & selected_buf == 1'b0),         //input ceb
+    .clkb(rd_clk),                           //input clkb
+    .ceb(ce),                                //input ceb
     .resetb(rst),                            //input resetb
     .oce(1'b0),                              //input oce
     .ada(wr_addr),                           //input [18:0] ada
@@ -59,11 +59,11 @@ frame_buffer_mem buf0 (
 
 frame_buffer_mem buf1 (
     .dout(buf1_rd_data),                     //output [0:0] dout
-    .clka(clk),                              //input clka
+    .clka(wr_clk),                           //input clka
     .cea(ce & wr_en & selected_buf == 1'b0), //input cea
     .reseta(rst),                            //input reseta
-    .clkb(clk),                              //input clkb
-    .ceb(ce & selected_buf == 1'b1),         //input ceb
+    .clkb(rd_clk),                           //input clkb
+    .ceb(ce),                                //input ceb
     .resetb(rst),                            //input resetb
     .oce(1'b0),                              //input oce
     .ada(wr_addr),                           //input [18:0] ada
@@ -73,12 +73,8 @@ frame_buffer_mem buf1 (
 
 // Processes
 
-always_ff @(posedge clk) begin
-    if (rst) begin
-        selected_buf <= 1'b0;
-    end else if (ce) begin
-        if (swap) selected_buf <= ~selected_buf;
-    end
+always_ff @(posedge rd_clk) begin
+    if (swap) selected_buf <= ~selected_buf;
 end
 
 endmodule
