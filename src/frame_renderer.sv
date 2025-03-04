@@ -84,8 +84,12 @@ always_ff @(posedge clk) begin
             state <= lose ? DRAW_BACKGROUND : MOVE_BIRD;
         end
         MOVE_BIRD: begin
-            if (btn) bird_y <= bird_y - 3;
-            else     bird_y <= bird_y + 3;
+            if (btn) begin
+                if (bird_y < 2) lose <= 1'b1;
+                else bird_y <= bird_y - 3;
+            end else if (bird_y >= VER_ACTIVE_PIXELS - BIRD_SIZE - 2)
+                lose <= 1'b1;
+            else bird_y <= bird_y + 3;
 
             state <= MOVE_PIPES;
         end
