@@ -35,13 +35,13 @@ IO_LOC "buttons_n[0]" T10;
 IO_PORT "buttons_n[0]" IO_TYPE=LVCMOS33;
 
 IO_LOC "switches[3]" T5;
-IO_PORT "switches[3]" IO_TYPE=LVCMOS33;
+IO_PORT "switches[3]" IO_TYPE=LVCMOS33 BANK_VCCIO=3.3;
 IO_LOC "switches[2]" T4;
-IO_PORT "switches[2]" IO_TYPE=LVCMOS33;
+IO_PORT "switches[2]" IO_TYPE=LVCMOS33 BANK_VCCIO=3.3;
 IO_LOC "switches[1]" E8;
-IO_PORT "switches[1]" IO_TYPE=LVCMOS33;
+IO_PORT "switches[1]" IO_TYPE=LVCMOS33 BANK_VCCIO=3.3;
 IO_LOC "switches[0]" E9;
-IO_PORT "switches[0]" IO_TYPE=LVCMOS33;
+IO_PORT "switches[0]" IO_TYPE=LVCMOS33 BANK_VCCIO=3.3;
 
 // HDMI
 
