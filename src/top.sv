@@ -13,19 +13,19 @@ module top (
 
 // Parameters
 
-parameter HOR_TOTAL_PIXELS       = 1650;
-parameter HOR_ACTIVE_PIXELS      = 1280;
-parameter HOR_BACK_PORCH_PIXELS  = 220;
-parameter HOR_FRONT_PORCH_PIXELS = 110;
-parameter HOR_SYNC_PIXELS        = 40;
-parameter HOR_SYNC_POLARITY      = 1'b1; // positive
+parameter HOR_TOTAL_PIXELS       = 800;
+parameter HOR_ACTIVE_PIXELS      = 640;
+parameter HOR_BACK_PORCH_PIXELS  = 48;
+parameter HOR_FRONT_PORCH_PIXELS = 16;
+parameter HOR_SYNC_PIXELS        = 96;
+parameter HOR_SYNC_POLARITY      = 1'b0; // negative
 
-parameter VER_TOTAL_PIXELS       = 750;
-parameter VER_ACTIVE_PIXELS      = 720;
-parameter VER_BACK_PORCH_PIXELS  = 20;
-parameter VER_FRONT_PORCH_PIXELS = 5;
-parameter VER_SYNC_PIXELS        = 5;
-parameter VER_SYNC_POLARITY      = 1'b1; // positive
+parameter VER_TOTAL_PIXELS       = 525;
+parameter VER_ACTIVE_PIXELS      = 480;
+parameter VER_BACK_PORCH_PIXELS  = 33;
+parameter VER_FRONT_PORCH_PIXELS = 10;
+parameter VER_SYNC_PIXELS        = 2;
+parameter VER_SYNC_POLARITY      = 1'b0; // negative
 
 localparam X_WIDTH = $clog2(HOR_ACTIVE_PIXELS);
 localparam Y_WIDTH = $clog2(VER_ACTIVE_PIXELS);
@@ -47,6 +47,7 @@ wire [4:0] buttons = ~buttons_n;
 wire [5:0] leds;
 
 wire clk_rgb;
+wire clk_tmds;
 
 wire ce  = all_pll_lock;
 wire rst = buttons[0];
@@ -59,13 +60,15 @@ wire [X_WIDTH-1:0] x;
 wire [Y_WIDTH-1:0] y;
 
 wire rgb_pll_lock;
-wire all_pll_lock = rgb_pll_lock;
+wire tmds_pll_lock;
+wire all_pll_lock = rgb_pll_lock & tmds_pll_lock;
 
 // Assignments
 
 assign leds_n  = ~leds;
 assign leds[0] = rst;
 assign leds[1] = rgb_pll_lock;
+assign leds[2] = tmds_pll_lock;
 
 // Modules
 
@@ -73,11 +76,19 @@ rgb_clock_pll rgb_clock_pll_inst (
     .clkout(clk_rgb),    //output clkout
     .lock(rgb_pll_lock), //output lock
     .reset(rst),         //input reset
-    .clkin(clk_27M)      //input clkin
+    .clkin(clk_tmds)      //input clkin
+);
+
+tmds_clock_pll your_instance_name(
+    .clkout(clk_tmds),    //output clkout
+    .lock(tmds_pll_lock), //output lock
+    .reset(rst),          //input reset
+    .clkin(clk_27M)       //input clkin
 );
 
 dvi_tx dvi_tx_inst (
     .I_rst_n(!rst),              //input I_rst_n
+    .I_serial_clk(clk_tmds),     //input I_serial_clk
     .I_rgb_clk(clk_rgb),         //input I_rgb_clk
     .I_rgb_vs(vs),               //input I_rgb_vs
     .I_rgb_hs(hs),               //input I_rgb_hs

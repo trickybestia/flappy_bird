@@ -8,6 +8,7 @@
         <File path="src/dvi_tx/dvi_tx.v" type="file.verilog" enable="1"/>
         <File path="src/pixel_iterator.sv" type="file.verilog" enable="1"/>
         <File path="src/rgb_clock_pll/rgb_clock_pll.v" type="file.verilog" enable="1"/>
+        <File path="src/tmds_clock_pll/tmds_clock_pll.v" type="file.verilog" enable="1"/>
         <File path="src/top.sv" type="file.verilog" enable="1"/>
         <File path="src/video_test.sv" type="file.verilog" enable="1"/>
         <File path="src/flappy_bird.cst" type="file.cst" enable="1"/>

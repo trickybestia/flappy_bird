@@ -29,7 +29,7 @@ wire is_border, is_diagonal;
 
 assign is_border = x == '0 || x == HOR_ACTIVE_PIXELS - 1
                 || y == '0 || y == VER_ACTIVE_PIXELS - 1;
-assign is_diagonal = y == x * 9 / 16 || y == VER_ACTIVE_PIXELS - x * 9 / 16;
+assign is_diagonal = y == x * VER_ACTIVE_PIXELS / HOR_ACTIVE_PIXELS || y == VER_ACTIVE_PIXELS - x * VER_ACTIVE_PIXELS / HOR_ACTIVE_PIXELS;
 
 assign r = 255;
 assign g = is_border || is_diagonal ? 0 : 255;
