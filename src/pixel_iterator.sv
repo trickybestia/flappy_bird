@@ -1,6 +1,7 @@
 module pixel_iterator (
     clk_rgb,
-    rst_n,
+    rst,
+    ce,
 
     x,
     y,
@@ -31,7 +32,8 @@ localparam Y_INTERNAL_WIDTH = $clog2(VER_TOTAL_PIXELS);
 // Ports
 
 input                clk_rgb;
-input                rst_n;
+input                rst;
+input                ce;
 
 output [X_WIDTH-1:0] x;
 output [Y_WIDTH-1:0] y;
@@ -76,11 +78,11 @@ always_comb begin
     end
 end
 
-always_ff @(posedge clk_rgb or negedge rst_n) begin
-    if (!rst_n) begin
+always_ff @(posedge clk_rgb) begin
+    if (rst) begin
         x_internal <= '0;
         y_internal <= '0;
-    end else begin
+    end else if (ce) begin
         x_internal <= next_x_internal;
         y_internal <= next_y_internal;
     end

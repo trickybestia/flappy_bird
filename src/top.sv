@@ -8,23 +8,7 @@ module top (
     tmds_clk_p,
     tmds_clk_n,
     tmds_data_p,
-    tmds_data_n,
-
-    ddr_addr,
-    ddr_bank,
-    ddr_cs,
-    ddr_ras,
-    ddr_cas,
-    ddr_we,
-    ddr_ck,
-    ddr_ck_n,
-    ddr_cke,
-    ddr_odt,
-    ddr_reset_n,
-    ddr_dm,
-    ddr_dq,
-    ddr_dqs,
-    ddr_dqs_n
+    tmds_data_n
 );
 
 // Parameters
@@ -55,27 +39,13 @@ output [5:0] leds_n;
 output       tmds_clk_p, tmds_clk_n;
 output [2:0] tmds_data_p, tmds_data_n;
 
-output [14-1:0] ddr_addr;       //ROW_WIDTH=14
-output [3-1:0]  ddr_bank;       //BANK_WIDTH=3
-output          ddr_cs;
-output          ddr_ras;
-output          ddr_cas;
-output          ddr_we;
-output          ddr_ck;
-output          ddr_ck_n;
-output          ddr_cke;
-output          ddr_odt;
-output          ddr_reset_n;
-output [2-1:0]  ddr_dm;         //DM_WIDTH=2
-inout  [16-1:0] ddr_dq;         //DQ_WIDTH=16
-inout  [2-1:0]  ddr_dqs;        //DQS_WIDTH=2
-inout  [2-1:0]  ddr_dqs_n;      //DQS_WIDTH=2
-
 // Wires/regs
 
+wire clk_rgb;
+
+wire ce;
 wire rst_n;
 
-wire       clk_rgb;
 wire [7:0] r_test, g_test, b_test; // RGB from video_test
 reg  [7:0] r, g, b;                // RGB out
 wire       hs, vs, de;
@@ -83,19 +53,22 @@ wire       hs, vs, de;
 wire [X_WIDTH-1:0] x;
 wire [Y_WIDTH-1:0] y;
 
-wire pll_lock;
+wire rgb_pll_lock;
+wire all_pll_lock;
 
 // Assignments
 
 assign rst_n = buttons_n[0];
 assign leds_n = 6'b000111 ^ buttons_n;
-assign ddr_cs = 1'b0;
+
+assign all_pll_lock = rgb_pll_lock;
+assign ce = all_pll_lock;
 
 // Modules
 
 rgb_clock_pll rgb_clock_pll_inst (
     .clkout(clk_rgb), //output clkout
-    .lock(pll_lock),  //output lock
+    .lock(rgb_pll_lock),  //output lock
     .reset(!rst_n),   //input reset
     .clkin(clk_27M)   //input clkin
 );
@@ -128,7 +101,8 @@ pixel_iterator #(
     .VER_SYNC_PIXELS(VER_SYNC_PIXELS)
 ) pixel_iterator_inst (
     .clk_rgb,
-    .rst_n,
+    .rst(!rst_n),
+    .ce,
     .x,
     .y,
     .hs,
