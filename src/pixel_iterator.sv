@@ -17,12 +17,14 @@ parameter HOR_ACTIVE_PIXELS;
 parameter HOR_BACK_PORCH_PIXELS;
 parameter HOR_FRONT_PORCH_PIXELS;
 parameter HOR_SYNC_PIXELS;
+parameter HOR_SYNC_POLARITY;
 
 parameter VER_TOTAL_PIXELS;
 parameter VER_ACTIVE_PIXELS;
 parameter VER_BACK_PORCH_PIXELS;
 parameter VER_FRONT_PORCH_PIXELS;
 parameter VER_SYNC_PIXELS;
+parameter VER_SYNC_POLARITY;
 
 localparam X_WIDTH = $clog2(HOR_ACTIVE_PIXELS);
 localparam Y_WIDTH = $clog2(VER_ACTIVE_PIXELS);
@@ -52,8 +54,8 @@ reg [Y_INTERNAL_WIDTH-1:0] next_y_internal;
 
 assign x = x_internal - HOR_BACK_PORCH_PIXELS;
 assign y = y_internal - VER_BACK_PORCH_PIXELS;
-assign hs = x_internal >= HOR_BACK_PORCH_PIXELS + HOR_ACTIVE_PIXELS + HOR_FRONT_PORCH_PIXELS;
-assign vs = y_internal >= VER_BACK_PORCH_PIXELS + VER_ACTIVE_PIXELS + VER_FRONT_PORCH_PIXELS;
+assign hs = x_internal >= HOR_BACK_PORCH_PIXELS + HOR_ACTIVE_PIXELS + HOR_FRONT_PORCH_PIXELS ? HOR_SYNC_POLARITY : ~HOR_SYNC_POLARITY;
+assign vs = y_internal >= VER_BACK_PORCH_PIXELS + VER_ACTIVE_PIXELS + VER_FRONT_PORCH_PIXELS ? VER_SYNC_POLARITY : ~VER_SYNC_POLARITY;
 assign de = (x_internal >= HOR_BACK_PORCH_PIXELS
              && x_internal < HOR_BACK_PORCH_PIXELS + HOR_ACTIVE_PIXELS)
             && (y_internal >= VER_BACK_PORCH_PIXELS
