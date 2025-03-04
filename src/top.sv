@@ -30,6 +30,8 @@ parameter VER_SYNC_POLARITY      = 1'b0; // negative
 localparam X_WIDTH = $clog2(HOR_ACTIVE_PIXELS);
 localparam Y_WIDTH = $clog2(VER_ACTIVE_PIXELS);
 
+localparam PIXEL_ADDR_WIDTH = $clog2(HOR_ACTIVE_PIXELS * VER_ACTIVE_PIXELS);
+
 // Ports
 
 input        clk_27M;
@@ -48,6 +50,7 @@ wire [5:0] leds;
 
 wire clk_rgb;
 wire clk_tmds;
+wire clk_renderer = clk_tmds;
 
 wire ce  = all_pll_lock;
 wire rst = buttons[0];
@@ -56,8 +59,11 @@ wire [7:0] r_test, g_test, b_test; // RGB from video_test
 reg  [7:0] r, g, b;                // RGB out
 wire       hs, vs, de;
 
-wire frame_buffer_rd_data;
-wire swap;
+wire                        frame_buffer_wr_en;
+wire [PIXEL_ADDR_WIDTH-1:0] frame_buffer_wr_addr;
+wire                        frame_buffer_wr_data;
+wire                        frame_buffer_rd_data;
+wire                        swap;
 
 wire [X_WIDTH-1:0] x;
 wire [Y_WIDTH-1:0] y;
@@ -130,13 +136,27 @@ pixel_iterator #(
     .swap
 );
 
+frame_renderer #(
+    .HOR_ACTIVE_PIXELS(HOR_ACTIVE_PIXELS),
+    .VER_ACTIVE_PIXELS(VER_ACTIVE_PIXELS)
+) frame_renderer_inst (
+    .clk(clk_renderer),
+    .rst,
+    .ce,
+    .btn(buttons[1]),
+    .wr_en(frame_buffer_wr_en),
+    .wr_addr(frame_buffer_wr_addr),
+    .wr_data(frame_buffer_wr_data),
+    .lose(leds[3])
+);
+
 frame_buffer frame_buffer_inst (
     .rst,
     .ce,
-    .wr_clk(clk_rgb),
-    .wr_en(buttons[1] | buttons[2]),
-    .wr_addr(y * HOR_ACTIVE_PIXELS + x),
-    .wr_data(buttons[1]),
+    .wr_clk(clk_renderer),
+    .wr_en(frame_buffer_wr_en),
+    .wr_addr(frame_buffer_wr_addr),
+    .wr_data(frame_buffer_wr_data),
     .rd_clk(clk_rgb),
     .rd_addr(y * HOR_ACTIVE_PIXELS + x),
     .rd_data(frame_buffer_rd_data),
