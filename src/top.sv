@@ -50,7 +50,7 @@ wire [5:0] leds;
 
 wire clk_rgb;
 wire clk_tmds;
-wire clk_renderer = clk_tmds;
+wire clk_renderer;
 
 wire ce  = all_pll_lock;
 wire rst = buttons[0];
@@ -89,10 +89,11 @@ rgb_clock_pll rgb_clock_pll_inst (
 );
 
 tmds_clock_pll tmds_clock_pll_inst (
-    .clkout(clk_tmds),    //output clkout
-    .lock(tmds_pll_lock), //output lock
-    .reset(rst),          //input reset
-    .clkin(clk_27M)       //input clkin
+    .clkout(clk_tmds),      //output clkout
+    .lock(tmds_pll_lock),   //output lock
+    .clkoutd(clk_renderer), //output clkoutd
+    .reset(rst),            //input reset
+    .clkin(clk_27M)         //input clkin
 );
 
 dvi_tx dvi_tx_inst (
@@ -141,9 +142,10 @@ frame_renderer #(
     .VER_ACTIVE_PIXELS(VER_ACTIVE_PIXELS)
 ) frame_renderer_inst (
     .clk(clk_renderer),
-    .rst,
+    .rst(rst | buttons[1]),
     .ce,
-    .btn(buttons[1]),
+    .btn(buttons[2]),
+    .swap,
     .wr_en(frame_buffer_wr_en),
     .wr_addr(frame_buffer_wr_addr),
     .wr_data(frame_buffer_wr_data),

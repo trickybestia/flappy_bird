@@ -5,17 +5,17 @@
 //Part Number: GW2A-LV18PG256C8/I7
 //Device: GW2A-18
 //Device Version: C
-//Created Time: Tue Mar  4 14:54:14 2025
+//Created Time: Tue Mar  4 21:27:09 2025
 
-module tmds_clock_pll (clkout, lock, reset, clkin);
+module tmds_clock_pll (clkout, lock, clkoutd, reset, clkin);
 
 output clkout;
 output lock;
+output clkoutd;
 input reset;
 input clkin;
 
 wire clkoutp_o;
-wire clkoutd_o;
 wire clkoutd3_o;
 wire gw_gnd;
 
@@ -25,7 +25,7 @@ rPLL rpll_inst (
     .CLKOUT(clkout),
     .LOCK(lock),
     .CLKOUTP(clkoutp_o),
-    .CLKOUTD(clkoutd_o),
+    .CLKOUTD(clkoutd),
     .CLKOUTD3(clkoutd3_o),
     .RESET(reset),
     .RESET_P(gw_gnd),
