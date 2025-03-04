@@ -6,6 +6,8 @@
     <Device name="GW2A-18C" pn="GW2A-LV18PG256C8/I7">gw2a18c-011</Device>
     <FileList>
         <File path="src/dvi_tx/dvi_tx.v" type="file.verilog" enable="1"/>
+        <File path="src/frame_buffer.sv" type="file.verilog" enable="1"/>
+        <File path="src/frame_buffer_mem/frame_buffer_mem.v" type="file.verilog" enable="1"/>
         <File path="src/pixel_iterator.sv" type="file.verilog" enable="1"/>
         <File path="src/rgb_clock_pll/rgb_clock_pll.v" type="file.verilog" enable="1"/>
         <File path="src/tmds_clock_pll/tmds_clock_pll.v" type="file.verilog" enable="1"/>

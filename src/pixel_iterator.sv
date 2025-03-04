@@ -7,7 +7,9 @@ module pixel_iterator (
     y,
     hs,
     vs,
-    de
+    de,
+
+    swap
 );
 
 // Parameters
@@ -43,6 +45,8 @@ output               hs;
 output               vs;
 output               de;
 
+output reg           swap;
+
 // Wires/regs
 
 reg [X_INTERNAL_WIDTH-1:0] x_internal;
@@ -66,11 +70,14 @@ assign de = (x_internal >= HOR_BACK_PORCH_PIXELS
 // Processes
 
 always_comb begin
+    swap = 1'b0;
+
     if (x_internal == HOR_TOTAL_PIXELS - 1) begin
         next_x_internal = '0;
 
         if (y_internal == VER_TOTAL_PIXELS - 1) begin
             next_y_internal = '0;
+            swap            = 1'b1;
         end else begin
             next_y_internal = y_internal + 1;
         end

@@ -56,6 +56,9 @@ wire [7:0] r_test, g_test, b_test; // RGB from video_test
 reg  [7:0] r, g, b;                // RGB out
 wire       hs, vs, de;
 
+wire frame_buffer_rd_data;
+wire swap;
+
 wire [X_WIDTH-1:0] x;
 wire [Y_WIDTH-1:0] y;
 
@@ -79,7 +82,7 @@ rgb_clock_pll rgb_clock_pll_inst (
     .clkin(clk_tmds)      //input clkin
 );
 
-tmds_clock_pll your_instance_name(
+tmds_clock_pll tmds_clock_pll_inst (
     .clkout(clk_tmds),    //output clkout
     .lock(tmds_pll_lock), //output lock
     .reset(rst),          //input reset
@@ -123,7 +126,20 @@ pixel_iterator #(
     .y,
     .hs,
     .vs,
-    .de
+    .de,
+    .swap
+);
+
+frame_buffer frame_buffer_inst (
+    .clk(clk_rgb),
+    .rst,
+    .ce,
+    .swap,
+    .wr_en(buttons[1] | buttons[2]),
+    .wr_addr(y * HOR_ACTIVE_PIXELS + x),
+    .wr_data(buttons[1]),
+    .rd_addr(y * HOR_ACTIVE_PIXELS + x),
+    .rd_data(frame_buffer_rd_data)
 );
 
 video_test #(
@@ -160,6 +176,11 @@ always_comb begin
             r = r_test;
             g = g_test;
             b = b_test;
+        end
+        5: begin
+            r = frame_buffer_rd_data ? 8'd255 : '0;
+            g = frame_buffer_rd_data ? 8'd255 : '0;
+            b = frame_buffer_rd_data ? 8'd255 : '0;
         end
         default: begin
             r = '0;
