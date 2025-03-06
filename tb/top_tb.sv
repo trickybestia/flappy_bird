@@ -10,8 +10,8 @@ module top_tb;
 
 reg clk_27M;
 
-reg  [4:0] buttons_n = '1;
-reg  [3:0] switches  = 4'd5;
+reg  [4:0] buttons_n = 5'b11011;
+reg  [3:0] switches  = 4'd7;
 wire [5:0] leds_n;
 
 // Assignments
@@ -38,7 +38,7 @@ initial begin
     $dumpfile("top_tb.vcd");
     $dumpvars;
 
-    #100000;
+    #30000;
 
     $finish;
 end

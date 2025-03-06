@@ -56,8 +56,8 @@ reg [Y_INTERNAL_WIDTH-1:0] next_y_internal;
 
 // Assignments
 
-assign x = x_internal - HOR_BACK_PORCH_PIXELS;
-assign y = y_internal - VER_BACK_PORCH_PIXELS;
+assign x = x_internal > HOR_BACK_PORCH_PIXELS ? x_internal - HOR_BACK_PORCH_PIXELS : '0;
+assign y = y_internal > VER_BACK_PORCH_PIXELS ? y_internal - VER_BACK_PORCH_PIXELS : '0;
 assign hs = x_internal >= HOR_BACK_PORCH_PIXELS + HOR_ACTIVE_PIXELS + HOR_FRONT_PORCH_PIXELS ? HOR_SYNC_POLARITY : ~HOR_SYNC_POLARITY;
 assign vs = y_internal >= VER_BACK_PORCH_PIXELS + VER_ACTIVE_PIXELS + VER_FRONT_PORCH_PIXELS ? VER_SYNC_POLARITY : ~VER_SYNC_POLARITY;
 assign de = (x_internal >= HOR_BACK_PORCH_PIXELS

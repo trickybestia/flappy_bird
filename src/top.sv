@@ -183,7 +183,7 @@ frame_buffer frame_buffer_inst (
     .wr_addr(frame_buffer_wr_addr),
     .wr_data(frame_buffer_wr_data),
     .rd_clk(clk_rgb),
-    .rd_addr(y * HOR_ACTIVE_PIXELS + x),
+    .rd_addr(y * HOR_ACTIVE_PIXELS + x + de),
     .rd_data(frame_buffer_rd_data),
     .swap
 );
