@@ -1,4 +1,7 @@
-module frame_buffer_test (
+module frame_buffer_test #(
+    parameter HOR_ACTIVE_PIXELS,
+    parameter VER_ACTIVE_PIXELS
+) (
     clk,
     rst,
     ce,
@@ -18,9 +21,6 @@ typedef enum {
 } state_t;
 
 // Parameters
-
-parameter HOR_ACTIVE_PIXELS;
-parameter VER_ACTIVE_PIXELS;
 
 localparam WR_ADDR_WIDTH = $clog2(HOR_ACTIVE_PIXELS * VER_ACTIVE_PIXELS);
 localparam HOR_ACTIVE_PIXELS_WIDTH = $clog2(HOR_ACTIVE_PIXELS);

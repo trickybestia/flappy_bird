@@ -1,4 +1,18 @@
-module pixel_iterator (
+module pixel_iterator #(
+    parameter HOR_TOTAL_PIXELS,
+    parameter HOR_ACTIVE_PIXELS,
+    parameter HOR_BACK_PORCH_PIXELS,
+    parameter HOR_FRONT_PORCH_PIXELS,
+    parameter HOR_SYNC_PIXELS,
+    parameter HOR_SYNC_POLARITY,
+
+    parameter VER_TOTAL_PIXELS,
+    parameter VER_ACTIVE_PIXELS,
+    parameter VER_BACK_PORCH_PIXELS,
+    parameter VER_FRONT_PORCH_PIXELS,
+    parameter VER_SYNC_PIXELS,
+    parameter VER_SYNC_POLARITY
+) (
     clk_rgb,
     rst,
     ce,
@@ -13,20 +27,6 @@ module pixel_iterator (
 );
 
 // Parameters
-
-parameter HOR_TOTAL_PIXELS;
-parameter HOR_ACTIVE_PIXELS;
-parameter HOR_BACK_PORCH_PIXELS;
-parameter HOR_FRONT_PORCH_PIXELS;
-parameter HOR_SYNC_PIXELS;
-parameter HOR_SYNC_POLARITY;
-
-parameter VER_TOTAL_PIXELS;
-parameter VER_ACTIVE_PIXELS;
-parameter VER_BACK_PORCH_PIXELS;
-parameter VER_FRONT_PORCH_PIXELS;
-parameter VER_SYNC_PIXELS;
-parameter VER_SYNC_POLARITY;
 
 localparam X_WIDTH = $clog2(HOR_ACTIVE_PIXELS);
 localparam Y_WIDTH = $clog2(VER_ACTIVE_PIXELS);

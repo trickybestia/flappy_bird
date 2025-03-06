@@ -1,4 +1,7 @@
-module frame_renderer (
+module frame_renderer #(
+    parameter HOR_ACTIVE_PIXELS,
+    parameter VER_ACTIVE_PIXELS
+) (
     clk,
     rst,
     ce,
@@ -25,9 +28,6 @@ typedef enum {
 } state_t;
 
 // Parameters
-
-parameter HOR_ACTIVE_PIXELS;
-parameter VER_ACTIVE_PIXELS;
 
 parameter BIRD_SIZE       = 30;
 parameter BIRD_HOR_OFFSET = 20;

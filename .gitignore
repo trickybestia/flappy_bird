@@ -1,3 +1,4 @@
+# Gowin
 *.user
 *.vo
 *.mod
@@ -6,4 +7,9 @@
 !/impl/flappy_bird_process_config.json
 
 /src/dvi_tx/temp
-/src/ddr3_memory_interface/temp
+
+# Icarus Verilog Simulation
+*.out
+# Waveforms
+*.vcd
+

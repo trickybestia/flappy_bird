@@ -26,7 +26,7 @@ input [18:0] wr_addr;
 input        wr_data;
 
 input         rd_clk;
-input  [18:0] rd_addr;
+input  [18:0] rd_addr /* synthesis syn_probe=1 */;
 output        rd_data;
 input         swap;
 
