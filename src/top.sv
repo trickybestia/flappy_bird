@@ -56,14 +56,23 @@ wire ce  = all_pll_lock;
 wire rst = buttons[0];
 
 wire [7:0] r_test, g_test, b_test; // RGB from video_test
+wire [7:0] r_test_1, g_test_1, b_test_1; // RGB from video_test_1
 reg  [7:0] r, g, b;                // RGB out
 wire       hs, vs, de;
 
-wire                        frame_buffer_wr_en;
-wire [PIXEL_ADDR_WIDTH-1:0] frame_buffer_wr_addr;
-wire                        frame_buffer_wr_data;
+reg                         frame_buffer_wr_en;
+reg  [PIXEL_ADDR_WIDTH-1:0] frame_buffer_wr_addr;
+reg                         frame_buffer_wr_data;
 wire                        frame_buffer_rd_data;
 wire                        swap;
+
+wire                        frame_buffer_test_wr_en;
+wire [PIXEL_ADDR_WIDTH-1:0] frame_buffer_test_wr_addr;
+wire                        frame_buffer_test_wr_data;
+
+wire                        frame_renderer_wr_en;
+wire [PIXEL_ADDR_WIDTH-1:0] frame_renderer_wr_addr;
+wire                        frame_renderer_wr_data;
 
 wire [X_WIDTH-1:0] x;
 wire [Y_WIDTH-1:0] y;
@@ -137,6 +146,20 @@ pixel_iterator #(
     .swap
 );
 
+frame_buffer_test #(
+    .HOR_ACTIVE_PIXELS(HOR_ACTIVE_PIXELS),
+    .VER_ACTIVE_PIXELS(VER_ACTIVE_PIXELS)
+) frame_buffer_test_inst (
+    .clk(clk_renderer),
+    .rst(rst | buttons[1]),
+    .ce,
+    .btn(buttons[2]),
+    .swap,
+    .wr_en(frame_buffer_test_wr_en),
+    .wr_addr(frame_buffer_test_wr_addr),
+    .wr_data(frame_buffer_test_wr_data)
+);
+
 frame_renderer #(
     .HOR_ACTIVE_PIXELS(HOR_ACTIVE_PIXELS),
     .VER_ACTIVE_PIXELS(VER_ACTIVE_PIXELS)
@@ -146,9 +169,9 @@ frame_renderer #(
     .ce,
     .btn(buttons[2]),
     .swap,
-    .wr_en(frame_buffer_wr_en),
-    .wr_addr(frame_buffer_wr_addr),
-    .wr_data(frame_buffer_wr_data),
+    .wr_en(frame_renderer_wr_en),
+    .wr_addr(frame_renderer_wr_addr),
+    .wr_data(frame_renderer_wr_data),
     .lose(leds[3])
 );
 
@@ -176,9 +199,25 @@ video_test #(
     .b(b_test)
 );
 
+video_test_1 #(
+    .HOR_ACTIVE_PIXELS(HOR_ACTIVE_PIXELS),
+    .VER_ACTIVE_PIXELS(VER_ACTIVE_PIXELS)
+) video_test_1_inst (
+    .x,
+    .y,
+    .btn(buttons[2]),
+    .r(r_test_1),
+    .g(g_test_1),
+    .b(b_test_1)
+);
+
 // Processes
 
 always_comb begin
+    frame_buffer_wr_en   = '0;
+    frame_buffer_wr_addr = '0;
+    frame_buffer_wr_data = '0;
+
     case (switches)
         1: begin
             r = 8'd255;
@@ -201,6 +240,24 @@ always_comb begin
             b = b_test;
         end
         5: begin
+            r = r_test_1;
+            g = g_test_1;
+            b = b_test_1;
+        end
+        6: begin
+            frame_buffer_wr_en   = frame_renderer_wr_en;
+            frame_buffer_wr_addr = frame_renderer_wr_addr;
+            frame_buffer_wr_data = frame_renderer_wr_data;
+
+            r = frame_buffer_rd_data ? 8'd255 : '0;
+            g = frame_buffer_rd_data ? 8'd255 : '0;
+            b = frame_buffer_rd_data ? 8'd255 : '0;
+        end
+        7: begin
+            frame_buffer_wr_en   = frame_buffer_test_wr_en;
+            frame_buffer_wr_addr = frame_buffer_test_wr_addr;
+            frame_buffer_wr_data = frame_buffer_test_wr_data;
+
             r = frame_buffer_rd_data ? 8'd255 : '0;
             g = frame_buffer_rd_data ? 8'd255 : '0;
             b = frame_buffer_rd_data ? 8'd255 : '0;
