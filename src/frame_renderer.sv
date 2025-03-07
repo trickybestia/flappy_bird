@@ -204,15 +204,15 @@ always_ff @(posedge clk) begin
             state <= DRAW_PIPES_WORK;
         end
         DRAW_PIPES_WORK: begin
-            wr_en   <= draw_pipes_pipe_y != '0 && draw_pipes_inv_x < HOR_ACTIVE_PIXELS && (draw_pipes_y <= draw_pipes_pipe_y || draw_pipes_y >= draw_pipes_pipe_y + PIPE_VER_GAP);
+            wr_en   <= (draw_pipes_pipe_y != '0 && draw_pipes_inv_x < HOR_ACTIVE_PIXELS) && (draw_pipes_y <= draw_pipes_pipe_y || draw_pipes_y >= draw_pipes_pipe_y + PIPE_VER_GAP);
             wr_addr <= draw_pipes_y * HOR_ACTIVE_PIXELS + draw_pipes_real_x;
             wr_data <= 1'b1;
 
             bird_image_rom_addr <= (draw_pipes_y - bird_y) / 2 * BIRD_WIDTH / 2 + (draw_pipes_real_x - BIRD_HOR_OFFSET) / 2;
-            draw_pipes_check_collision <= draw_pipes_y >= bird_y
-                      && draw_pipes_y <= bird_y + BIRD_HEIGHT
-                      && draw_pipes_real_x >= BIRD_HOR_OFFSET
-                      && draw_pipes_real_x <= BIRD_HOR_OFFSET + BIRD_WIDTH;
+            draw_pipes_check_collision <= (draw_pipes_y >= bird_y
+                      && draw_pipes_y <= bird_y + BIRD_HEIGHT)
+                      && (draw_pipes_real_x >= BIRD_HOR_OFFSET
+                      && draw_pipes_real_x <= BIRD_HOR_OFFSET + BIRD_WIDTH);
 
             state <= DRAW_PIPES_CHECK_COLLISION;
         end
