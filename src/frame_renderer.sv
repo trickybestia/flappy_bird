@@ -75,11 +75,11 @@ reg [$clog2(BIRD_SIZE)-1:0] draw_bird_x, draw_bird_y;
 
 // DRAW_PIPES
 reg  [3:0]                         draw_pipes_pipe;
-reg  [HOR_ACTIVE_PIXELS_WIDTH-1:0] draw_pipes_x;
+reg  [$clog2(PIPE_WIDTH)-1:0]      draw_pipes_x;
 reg  [VER_ACTIVE_PIXELS_WIDTH-1:0] draw_pipes_y;
 wire [VER_ACTIVE_PIXELS_WIDTH-1:0] draw_pipes_pipe_y = pipes_y[draw_pipes_pipe * VER_ACTIVE_PIXELS_WIDTH+:VER_ACTIVE_PIXELS_WIDTH];
-reg  [HOR_ACTIVE_PIXELS:0]         draw_pipes_inv_x;
-reg  [HOR_ACTIVE_PIXELS-1:0]       draw_pipes_real_x;
+reg  [HOR_ACTIVE_PIXELS_WIDTH:0]         draw_pipes_inv_x;
+reg  [HOR_ACTIVE_PIXELS_WIDTH-1:0]       draw_pipes_real_x;
 
 // Assignments
 
