@@ -21,6 +21,7 @@ typedef enum {
     CHECK_LOSE = 0,
     MOVE_BIRD,
     MOVE_PIPES,
+    DRAW_BACKGROUND_START,
     DRAW_BACKGROUND,
     DRAW_BIRD,
     DRAW_PIPES_UPDATE_INV_X,
@@ -105,7 +106,7 @@ always_ff @(posedge clk) begin
         bird_y            <= VER_ACTIVE_PIXELS / 2 - BIRD_SIZE / 2;
     end else if (ce) case (state)
         CHECK_LOSE: begin
-            state <= lose ? DRAW_BACKGROUND : MOVE_BIRD;
+            state <= lose ? DRAW_BACKGROUND_START : MOVE_BIRD;
         end
         MOVE_BIRD: begin
             if (btn) begin
@@ -125,12 +126,17 @@ always_ff @(posedge clk) begin
                 pipe_offset <= pipe_offset + 1;
             end
 
+            state <= DRAW_BACKGROUND_START;
+        end
+        DRAW_BACKGROUND_START: begin
+            wr_en   <= 1'b1;
+            wr_addr <= '0;
+            wr_data <= '0;
+
             state <= DRAW_BACKGROUND;
         end
         DRAW_BACKGROUND: begin
-            wr_en   <= 1'b1;
             wr_addr <= wr_addr + 1;
-            wr_data <= 1'b0;
 
             if (wr_addr == HOR_ACTIVE_PIXELS * VER_ACTIVE_PIXELS - 1) begin
                 state <= DRAW_BIRD;
