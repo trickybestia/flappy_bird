@@ -33,7 +33,8 @@ typedef enum {
 
 // Parameters
 
-parameter BIRD_SIZE       = 30;
+parameter BIRD_WIDTH      = 34;
+parameter BIRD_HEIGHT     = 24;
 parameter BIRD_HOR_OFFSET = 20;
 parameter PIPE_VER_GAP    = 100;
 parameter PIPE_HOR_GAP    = 150;
@@ -71,19 +72,27 @@ reg [HOR_ACTIVE_PIXELS_WIDTH-1:0] pipe_offset;
 reg [VER_ACTIVE_PIXELS_WIDTH*PIPES_COUNT-1:0] pipes_y;
 
 // DRAW_BIRD
-reg [$clog2(BIRD_SIZE)-1:0] draw_bird_x, draw_bird_y;
+reg  [$clog2(BIRD_WIDTH)-1:0]  draw_bird_x;
+reg  [$clog2(BIRD_HEIGHT)-1:0] draw_bird_y;
+wire                           bird_image_rom_out;
 
 // DRAW_PIPES
 reg  [3:0]                         draw_pipes_pipe;
 reg  [$clog2(PIPE_WIDTH)-1:0]      draw_pipes_x;
 reg  [VER_ACTIVE_PIXELS_WIDTH-1:0] draw_pipes_y;
 wire [VER_ACTIVE_PIXELS_WIDTH-1:0] draw_pipes_pipe_y = pipes_y[draw_pipes_pipe * VER_ACTIVE_PIXELS_WIDTH+:VER_ACTIVE_PIXELS_WIDTH];
-reg  [HOR_ACTIVE_PIXELS_WIDTH:0]         draw_pipes_inv_x;
-reg  [HOR_ACTIVE_PIXELS_WIDTH-1:0]       draw_pipes_real_x;
+reg  [HOR_ACTIVE_PIXELS_WIDTH:0]   draw_pipes_inv_x;
+reg  [HOR_ACTIVE_PIXELS_WIDTH-1:0] draw_pipes_real_x;
 
 // Assignments
 
 // Modules
+
+bird_image_rom bird_image_rom_inst (
+    .dout(bird_image_rom_out),                                  //output [0:0] dout
+    // Divide because source image is 17x12 and we need to upscale it to 34x24
+    .ad((draw_bird_y / 2) * (BIRD_WIDTH / 2) + draw_bird_x / 2) //input [7:0] ad
+);
 
 // Processes
 
@@ -103,7 +112,7 @@ always_ff @(posedge clk) begin
         wr_addr           <= '0;
         wr_data           <= '0;
         lose              <= 1'b0;
-        bird_y            <= VER_ACTIVE_PIXELS / 2 - BIRD_SIZE / 2;
+        bird_y            <= VER_ACTIVE_PIXELS / 2 - BIRD_HEIGHT / 2;
     end else if (ce) case (state)
         CHECK_LOSE: begin
             state <= lose ? DRAW_BACKGROUND_START : MOVE_BIRD;
@@ -112,7 +121,7 @@ always_ff @(posedge clk) begin
             if (btn) begin
                 if (bird_y < 2) lose <= 1'b1;
                 else bird_y <= bird_y - 3;
-            end else if (bird_y >= VER_ACTIVE_PIXELS - BIRD_SIZE - 2)
+            end else if (bird_y >= VER_ACTIVE_PIXELS - BIRD_HEIGHT - 2)
                 lose <= 1'b1;
             else bird_y <= bird_y + 3;
 
@@ -145,10 +154,10 @@ always_ff @(posedge clk) begin
         DRAW_BIRD: begin
             wr_en   <= 1'b1;
             wr_addr <= (bird_y + draw_bird_y) * HOR_ACTIVE_PIXELS + BIRD_HOR_OFFSET + draw_bird_x;
-            wr_data <= 1'b1;
+            wr_data <= bird_image_rom_out;
 
-            if (draw_bird_x == BIRD_SIZE - 1) begin
-                if (draw_bird_y == BIRD_SIZE - 1) begin
+            if (draw_bird_x == BIRD_WIDTH - 1) begin
+                if (draw_bird_y == BIRD_HEIGHT - 1) begin
                     draw_bird_x <= '0;
                     draw_bird_y <= '0;
                     state       <= DRAW_PIPES_UPDATE_INV_X;
@@ -168,16 +177,16 @@ always_ff @(posedge clk) begin
             state <= DRAW_PIPES_WORK;
         end
         DRAW_PIPES_WORK: begin
-            wr_en <= draw_pipes_pipe_y != '0 && draw_pipes_inv_x < HOR_ACTIVE_PIXELS && (draw_pipes_y <= draw_pipes_pipe_y || draw_pipes_y >= draw_pipes_pipe_y + PIPE_VER_GAP);
+            wr_en   <= draw_pipes_pipe_y != '0 && draw_pipes_inv_x < HOR_ACTIVE_PIXELS && (draw_pipes_y <= draw_pipes_pipe_y || draw_pipes_y >= draw_pipes_pipe_y + PIPE_VER_GAP);
             wr_addr <= draw_pipes_y * HOR_ACTIVE_PIXELS + draw_pipes_real_x;
             wr_data <= 1'b1;
 
             state <= DRAW_PIPES_CHECK_COLLISION;
         end
         DRAW_PIPES_CHECK_COLLISION: begin
-            if (wr_en && draw_pipes_y >= bird_y && draw_pipes_y <= bird_y + BIRD_SIZE
+            if (wr_en && draw_pipes_y >= bird_y && draw_pipes_y <= bird_y + BIRD_HEIGHT
                       && draw_pipes_real_x >= BIRD_HOR_OFFSET
-                      && draw_pipes_real_x <= BIRD_HOR_OFFSET + BIRD_SIZE) begin
+                      && draw_pipes_real_x <= BIRD_HOR_OFFSET + BIRD_WIDTH) begin
                         lose <= 1'b1;
                       end
 
