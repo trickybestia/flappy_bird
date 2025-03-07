@@ -38,7 +38,7 @@ typedef enum {
 parameter BIRD_WIDTH      = 34;
 parameter BIRD_HEIGHT     = 24;
 parameter BIRD_HOR_OFFSET = 20;
-parameter PIPE_VER_GAP    = 100;
+parameter PIPE_VER_GAP    = 200;
 parameter PIPE_HOR_GAP    = 150;
 parameter PIPE_WIDTH      = 40;
 parameter PIPES_COUNT     = 5;
@@ -88,6 +88,8 @@ reg  [HOR_ACTIVE_PIXELS_WIDTH:0]   draw_pipes_inv_x;
 reg  [HOR_ACTIVE_PIXELS_WIDTH-1:0] draw_pipes_real_x;
 reg                                draw_pipes_check_collision;
 
+wire [VER_ACTIVE_PIXELS_WIDTH-1:0] lfsr_rng_out;
+
 // Assignments
 
 // Modules
@@ -95,6 +97,16 @@ reg                                draw_pipes_check_collision;
 bird_image_rom bird_image_rom_inst (
     .dout(bird_image_rom_out), //output [0:0] dout
     .ad(bird_image_rom_addr)   //input [7:0] ad
+);
+
+lfsr_rng #(
+    .OUT_MIN(1),
+    .OUT_MAX(VER_ACTIVE_PIXELS - PIPE_VER_GAP - 1)
+) lfsr_rng_inst (
+    .clk,
+    .rst,
+    .ce,
+    .out(lfsr_rng_out)
 );
 
 // Processes
@@ -137,7 +149,7 @@ always_ff @(posedge clk) begin
         MOVE_PIPES: begin
             if (pipe_offset == PIPE_HOR_GAP + PIPE_WIDTH) begin
                 pipe_offset <= '0;
-                pipes_y     <= {pipes_y[VER_ACTIVE_PIXELS_WIDTH*(PIPES_COUNT-1)-1:0], VER_ACTIVE_PIXELS_WIDTH'(VER_ACTIVE_PIXELS / 2)};
+                pipes_y     <= {pipes_y[VER_ACTIVE_PIXELS_WIDTH*(PIPES_COUNT-1)-1:0], lfsr_rng_out};
             end else begin
                 pipe_offset <= pipe_offset + 1;
             end
