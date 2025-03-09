@@ -5,6 +5,8 @@
     <Version>5</Version>
     <Device name="GW2A-18C" pn="GW2A-LV18PG256C8/I7">gw2a18c-011</Device>
     <FileList>
+        <File path="src/bcd_adder.sv" type="file.verilog" enable="1"/>
+        <File path="src/bcd_ripple_carry_adder.sv" type="file.verilog" enable="1"/>
         <File path="src/bird_image_rom/bird_image_rom.v" type="file.verilog" enable="1"/>
         <File path="src/dvi_tx/dvi_tx.v" type="file.verilog" enable="1"/>
         <File path="src/frame_buffer.sv" type="file.verilog" enable="1"/>
@@ -18,6 +20,7 @@
         <File path="src/top.sv" type="file.verilog" enable="1"/>
         <File path="src/video_test.sv" type="file.verilog" enable="1"/>
         <File path="src/video_test_1.sv" type="file.verilog" enable="1"/>
+        <File path="tb/bcd_ripple_carry_adder_tb.sv" type="file.verilog" enable="0"/>
         <File path="tb/top_tb.sv" type="file.verilog" enable="0"/>
         <File path="src/flappy_bird.cst" type="file.cst" enable="1"/>
         <File path="src/flappy_bird.sdc" type="file.sdc" enable="1"/>
