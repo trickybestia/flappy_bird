@@ -30,18 +30,26 @@ typedef enum {
     DRAW_PIPES_WORK,
     DRAW_PIPES_CHECK_COLLISION,
     DRAW_PIPES_UPDATE_COORDS,
+    DRAW_SCORE_COMPUTE_ADDR,
+    DRAW_SCORE_WORK,
     DONE
 } state_t;
 
 // Parameters
 
-parameter BIRD_WIDTH      = 34;
-parameter BIRD_HEIGHT     = 24;
-parameter BIRD_HOR_OFFSET = 20;
-parameter PIPE_VER_GAP    = 200;
-parameter PIPE_HOR_GAP    = 150;
-parameter PIPE_WIDTH      = 40;
-parameter PIPES_COUNT     = 5;
+parameter BIRD_WIDTH         = 34;
+parameter BIRD_HEIGHT        = 24;
+parameter BIRD_HOR_OFFSET    = 20;
+parameter PIPE_VER_GAP       = 200;
+parameter PIPE_HOR_GAP       = 150;
+parameter PIPE_WIDTH         = 40;
+parameter PIPES_COUNT        = 5;
+parameter SCORE_DIGITS       = 3;
+parameter SCORE_VER_OFFSET   = 10;
+parameter SCORE_HOR_OFFSET   = 490;
+parameter SCORE_HOR_GAP      = 10;
+parameter SCORE_DIGIT_WIDTH  = 40;
+parameter SCORE_DIGIT_HEIGHT = 80;
 
 localparam WR_ADDR_WIDTH = $clog2(HOR_ACTIVE_PIXELS * VER_ACTIVE_PIXELS);
 localparam HOR_ACTIVE_PIXELS_WIDTH = $clog2(HOR_ACTIVE_PIXELS);
@@ -69,6 +77,9 @@ state_t state;
 
 reg [VER_ACTIVE_PIXELS_WIDTH-1:0] bird_y;
 
+reg  [SCORE_DIGITS*4-1:0] score_bcd;
+wire [SCORE_DIGITS*4-1:0] score_adder_out;
+
 reg [HOR_ACTIVE_PIXELS_WIDTH-1:0] pipe_offset;
 
 reg [VER_ACTIVE_PIXELS_WIDTH*PIPES_COUNT-1:0] pipes_y;
@@ -80,15 +91,21 @@ reg  [7:0]                     bird_image_rom_addr;
 wire                           bird_image_rom_out;
 
 // DRAW_PIPES
-reg  [3:0]                         draw_pipes_pipe;
-reg  [$clog2(PIPE_WIDTH)-1:0]      draw_pipes_x;
-reg  [VER_ACTIVE_PIXELS_WIDTH-1:0] draw_pipes_y;
-wire [VER_ACTIVE_PIXELS_WIDTH-1:0] draw_pipes_pipe_y = pipes_y[draw_pipes_pipe * VER_ACTIVE_PIXELS_WIDTH+:VER_ACTIVE_PIXELS_WIDTH];
-reg  [HOR_ACTIVE_PIXELS_WIDTH:0]   draw_pipes_inv_x;
-reg  [HOR_ACTIVE_PIXELS_WIDTH-1:0] draw_pipes_real_x;
-reg                                draw_pipes_check_collision;
+reg [3:0]                         draw_pipes_pipe;
+reg [$clog2(PIPE_WIDTH)-1:0]      draw_pipes_x;
+reg [VER_ACTIVE_PIXELS_WIDTH-1:0] draw_pipes_y;
+reg [VER_ACTIVE_PIXELS_WIDTH-1:0] draw_pipes_pipe_y;
+reg [HOR_ACTIVE_PIXELS_WIDTH:0]   draw_pipes_inv_x;
+reg [HOR_ACTIVE_PIXELS_WIDTH-1:0] draw_pipes_real_x;
+reg                               draw_pipes_check_collision;
 
 wire [VER_ACTIVE_PIXELS_WIDTH-1:0] lfsr_rng_out;
+
+// DRAW_SCORE
+reg [$clog2(SCORE_DIGITS+1)-1:0]     draw_score_index;
+reg [$clog2(SCORE_DIGIT_HEIGHT)-1:0] draw_score_y;
+reg [$clog2(SCORE_DIGIT_WIDTH)-1:0]  draw_score_x;
+reg [WR_ADDR_WIDTH-1:0]              draw_score_addr_1, draw_score_addr_2, draw_score_addr_3;
 
 // Assignments
 
@@ -109,6 +126,16 @@ lfsr_rng #(
     .out(lfsr_rng_out)
 );
 
+bcd_ripple_carry_adder #(
+    .DIGITS_COUNT(SCORE_DIGITS)
+) score_adder (
+    .a(score_bcd),
+    .b(1),
+    .cin(0),
+    .sum(score_adder_out),
+    .cout()
+);
+
 // Processes
 
 always_ff @(posedge clk) begin
@@ -124,14 +151,22 @@ always_ff @(posedge clk) begin
         draw_pipes_pipe            <= '0;
         draw_pipes_x               <= '0;
         draw_pipes_y               <= '0;
+        draw_pipes_pipe_y          <= '0;
         draw_pipes_inv_x           <= '0;
         draw_pipes_real_x          <= '0;
         draw_pipes_check_collision <= '0;
+        draw_score_index           <= '0;
+        draw_score_x               <= '0;
+        draw_score_y               <= '0;
+        draw_score_addr_1          <= '0;
+        draw_score_addr_2          <= '0;
+        draw_score_addr_3          <= '0;
         wr_en                      <= '0;
         wr_addr                    <= '0;
         wr_data                    <= '0;
         lose                       <= 1'b0;
         bird_y                     <= VER_ACTIVE_PIXELS / 2 - BIRD_HEIGHT / 2;
+        score_bcd                  <= '0;
     end else if (ce) case (state)
         CHECK_LOSE: begin
             state <= lose ? DRAW_BACKGROUND_START : MOVE_BIRD;
@@ -210,6 +245,7 @@ always_ff @(posedge clk) begin
         end
         DRAW_PIPES_UPDATE_INV_X: begin
             wr_en             <= '0;
+            draw_pipes_pipe_y <= pipes_y[draw_pipes_pipe * VER_ACTIVE_PIXELS_WIDTH+:VER_ACTIVE_PIXELS_WIDTH];
             draw_pipes_inv_x  <= pipe_offset + (PIPE_WIDTH + PIPE_HOR_GAP) * draw_pipes_pipe + draw_pipes_x;
             draw_pipes_real_x <= HOR_ACTIVE_PIXELS - 1 - (pipe_offset + (PIPE_WIDTH + PIPE_HOR_GAP) * draw_pipes_pipe + draw_pipes_x);
 
@@ -240,7 +276,7 @@ always_ff @(posedge clk) begin
                 wr_addr         <= '0;
                 wr_en           <= '0;
                 wr_data         <= '0;
-                state           <= DONE;
+                state           <= DRAW_SCORE_COMPUTE_ADDR;
             end else begin
                 state <= DRAW_PIPES_UPDATE_COORDS;
             end
@@ -262,6 +298,43 @@ always_ff @(posedge clk) begin
             end
 
             state <= DRAW_PIPES_UPDATE_INV_X;
+        end
+        DRAW_SCORE_COMPUTE_ADDR: begin
+            wr_en <= '0;
+
+            draw_score_addr_1 <= (draw_score_y + SCORE_VER_OFFSET) * HOR_ACTIVE_PIXELS;
+            draw_score_addr_2 <= (SCORE_HOR_GAP + SCORE_DIGIT_WIDTH) * draw_score_index;
+            draw_score_addr_3 <= SCORE_HOR_OFFSET + draw_score_x;
+
+            if (draw_score_index == SCORE_DIGITS) begin
+                draw_score_index <= '0;
+                draw_score_x     <= '0;
+                draw_score_y     <= '0;
+
+                state <= DONE;
+            end else begin
+                state <= DRAW_SCORE_WORK;
+            end
+        end
+        DRAW_SCORE_WORK: begin
+            wr_en   <= 1'b1;
+            wr_addr <= draw_score_addr_1 + draw_score_addr_2 + draw_score_addr_3;
+            wr_data <= 1'b1;
+
+            if (draw_score_x == SCORE_DIGIT_WIDTH - 1) begin
+                draw_score_x <= '0;
+
+                if (draw_score_y == SCORE_DIGIT_HEIGHT - 1) begin
+                    draw_score_y <= '0;
+                    draw_score_index <= draw_score_index + 1;
+                end else begin
+                    draw_score_y <= draw_score_y + 1;
+                end
+            end else begin
+                draw_score_x <= draw_score_x + 1;
+            end
+
+            state <= DRAW_SCORE_COMPUTE_ADDR;
         end
         DONE: begin
             wr_en <= '0;
