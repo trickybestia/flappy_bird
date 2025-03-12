@@ -48,8 +48,8 @@ parameter SCORE_DIGITS       = 3;
 parameter SCORE_VER_OFFSET   = 10;
 parameter SCORE_HOR_OFFSET   = 490;
 parameter SCORE_HOR_GAP      = 10;
-parameter SCORE_DIGIT_WIDTH  = 40;
-parameter SCORE_DIGIT_HEIGHT = 80;
+parameter SCORE_DIGIT_WIDTH  = 5*8;
+parameter SCORE_DIGIT_HEIGHT = 9*8;
 
 localparam WR_ADDR_WIDTH = $clog2(HOR_ACTIVE_PIXELS * VER_ACTIVE_PIXELS);
 localparam HOR_ACTIVE_PIXELS_WIDTH = $clog2(HOR_ACTIVE_PIXELS);
@@ -102,10 +102,12 @@ reg                               draw_pipes_check_collision;
 wire [VER_ACTIVE_PIXELS_WIDTH-1:0] lfsr_rng_out;
 
 // DRAW_SCORE
-reg [$clog2(SCORE_DIGITS+1)-1:0]     draw_score_index;
-reg [$clog2(SCORE_DIGIT_HEIGHT)-1:0] draw_score_y;
-reg [$clog2(SCORE_DIGIT_WIDTH)-1:0]  draw_score_x;
-reg [WR_ADDR_WIDTH-1:0]              draw_score_addr_1, draw_score_addr_2, draw_score_addr_3;
+reg  [$clog2(SCORE_DIGITS+1)-1:0]     draw_score_index;
+reg  [$clog2(SCORE_DIGIT_HEIGHT)-1:0] draw_score_y;
+reg  [$clog2(SCORE_DIGIT_WIDTH)-1:0]  draw_score_x;
+reg  [8:0]                            digits_image_rom_addr;
+wire                                  digits_image_rom_out;
+reg  [WR_ADDR_WIDTH-1:0]              draw_score_addr_1, draw_score_addr_2, draw_score_addr_3;
 
 // Assignments
 
@@ -114,6 +116,11 @@ reg [WR_ADDR_WIDTH-1:0]              draw_score_addr_1, draw_score_addr_2, draw_
 bird_image_rom bird_image_rom_inst (
     .dout(bird_image_rom_out), //output [0:0] dout
     .ad(bird_image_rom_addr)   //input [7:0] ad
+);
+
+digits_image_rom digits_image_rom_inst (
+    .dout(digits_image_rom_out), //output [0:0] dout
+    .ad(digits_image_rom_addr)   //input [8:0] ad
 );
 
 lfsr_rng #(
@@ -130,7 +137,7 @@ bcd_ripple_carry_adder #(
     .DIGITS_COUNT(SCORE_DIGITS)
 ) score_adder (
     .a(score_bcd),
-    .b(1),
+    .b(),
     .cin(0),
     .sum(score_adder_out),
     .cout()
@@ -161,6 +168,7 @@ always_ff @(posedge clk) begin
         draw_score_addr_1          <= '0;
         draw_score_addr_2          <= '0;
         draw_score_addr_3          <= '0;
+        digits_image_rom_addr      <= '0;
         wr_en                      <= '0;
         wr_addr                    <= '0;
         wr_data                    <= '0;
@@ -185,6 +193,7 @@ always_ff @(posedge clk) begin
             if (pipe_offset == PIPE_HOR_GAP + PIPE_WIDTH) begin
                 pipe_offset <= '0;
                 pipes_y     <= {pipes_y[VER_ACTIVE_PIXELS_WIDTH*(PIPES_COUNT-1)-1:0], lfsr_rng_out};
+                score_bcd   <= score_adder_out;
             end else begin
                 pipe_offset <= pipe_offset + 1;
             end
@@ -252,7 +261,7 @@ always_ff @(posedge clk) begin
             state <= DRAW_PIPES_WORK;
         end
         DRAW_PIPES_WORK: begin
-            wr_en   <= (draw_pipes_pipe_y != '0 && draw_pipes_inv_x < HOR_ACTIVE_PIXELS) && (draw_pipes_y <= draw_pipes_pipe_y || draw_pipes_y >= draw_pipes_pipe_y + PIPE_VER_GAP);
+            wr_en   <= (draw_pipes_pipe_y != '0 && draw_pipes_inv_x < HOR_ACTIVE_PIXELS) && (draw_pipes_y <= draw_pipes_pipe_y || draw_pipes_y >= draw_pipes_pipe_y + PIPE_VER_GAP); // STA slack
             wr_addr <= draw_pipes_y * HOR_ACTIVE_PIXELS + draw_pipes_real_x;
             wr_data <= 1'b1;
 
@@ -260,7 +269,7 @@ always_ff @(posedge clk) begin
             draw_pipes_check_collision <= (draw_pipes_y >= bird_y
                       && draw_pipes_y <= bird_y + BIRD_HEIGHT)
                       && (draw_pipes_real_x >= BIRD_HOR_OFFSET
-                      && draw_pipes_real_x <= BIRD_HOR_OFFSET + BIRD_WIDTH);
+                      && draw_pipes_real_x <= BIRD_HOR_OFFSET + BIRD_WIDTH); // STA slack
 
             state <= DRAW_PIPES_CHECK_COLLISION;
         end
@@ -302,9 +311,10 @@ always_ff @(posedge clk) begin
         DRAW_SCORE_COMPUTE_ADDR: begin
             wr_en <= '0;
 
-            draw_score_addr_1 <= (draw_score_y + SCORE_VER_OFFSET) * HOR_ACTIVE_PIXELS;
-            draw_score_addr_2 <= (SCORE_HOR_GAP + SCORE_DIGIT_WIDTH) * draw_score_index;
-            draw_score_addr_3 <= SCORE_HOR_OFFSET + draw_score_x;
+            draw_score_addr_1     <= (draw_score_y + SCORE_VER_OFFSET) * HOR_ACTIVE_PIXELS;
+            draw_score_addr_2     <= (SCORE_HOR_GAP + SCORE_DIGIT_WIDTH) * draw_score_index;
+            draw_score_addr_3     <= SCORE_HOR_OFFSET + draw_score_x;
+            digits_image_rom_addr <= score_bcd[SCORE_DIGITS*4-1:(SCORE_DIGITS-1)*4] * 45 + draw_score_y / 8 * 5 + draw_score_x / 8;
 
             if (draw_score_index == SCORE_DIGITS) begin
                 draw_score_index <= '0;
@@ -319,7 +329,7 @@ always_ff @(posedge clk) begin
         DRAW_SCORE_WORK: begin
             wr_en   <= 1'b1;
             wr_addr <= draw_score_addr_1 + draw_score_addr_2 + draw_score_addr_3;
-            wr_data <= 1'b1;
+            wr_data <= digits_image_rom_out;
 
             if (draw_score_x == SCORE_DIGIT_WIDTH - 1) begin
                 draw_score_x <= '0;
@@ -327,6 +337,7 @@ always_ff @(posedge clk) begin
                 if (draw_score_y == SCORE_DIGIT_HEIGHT - 1) begin
                     draw_score_y <= '0;
                     draw_score_index <= draw_score_index + 1;
+                    score_bcd <= {score_bcd[(SCORE_DIGITS-1)*4-1:0], score_bcd[SCORE_DIGITS*4-1:(SCORE_DIGITS-1)*4]};
                 end else begin
                     draw_score_y <= draw_score_y + 1;
                 end

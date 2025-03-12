@@ -1,0 +1,13 @@
+[General]
+ipc_version=4
+file=digits_image_rom
+module=digits_image_rom
+target_device=gw2a18c-011
+type=ssram_rom16
+version=1.0
+
+[Config]
+DEPTH=450
+LANG=0
+MEM_FILE=../digits.mi
+WIDTH=1
