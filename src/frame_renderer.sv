@@ -139,7 +139,7 @@ bcd_ripple_carry_adder #(
     .DIGITS_COUNT(SCORE_DIGITS)
 ) score_adder (
     .a(score_bcd),
-    .b(),
+    .b(1),
     .cin(0),
     .sum(score_adder_out),
     .cout()
