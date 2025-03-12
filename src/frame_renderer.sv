@@ -97,7 +97,9 @@ reg [VER_ACTIVE_PIXELS_WIDTH-1:0] draw_pipes_y;
 reg [VER_ACTIVE_PIXELS_WIDTH-1:0] draw_pipes_pipe_y;
 reg [HOR_ACTIVE_PIXELS_WIDTH:0]   draw_pipes_inv_x;
 reg [HOR_ACTIVE_PIXELS_WIDTH-1:0] draw_pipes_real_x;
-reg                               draw_pipes_check_collision;
+reg                               draw_pipes_check_collision_1;
+reg                               draw_pipes_check_collision_2;
+reg                               draw_pipes_check_collision_3;
 
 wire [VER_ACTIVE_PIXELS_WIDTH-1:0] lfsr_rng_out;
 
@@ -147,34 +149,36 @@ bcd_ripple_carry_adder #(
 
 always_ff @(posedge clk) begin
     if (rst) begin
-        state                      <= CHECK_LOSE;
-        pipe_offset                <= '0;
-        pipes_y                    <= '0;
-        draw_bird_x                <= '0;
-        draw_bird_y                <= '0;
-        draw_bird_last_x           <= '0;
-        draw_bird_last_y           <= '0;
-        bird_image_rom_addr        <= '0;
-        draw_pipes_pipe            <= '0;
-        draw_pipes_x               <= '0;
-        draw_pipes_y               <= '0;
-        draw_pipes_pipe_y          <= '0;
-        draw_pipes_inv_x           <= '0;
-        draw_pipes_real_x          <= '0;
-        draw_pipes_check_collision <= '0;
-        draw_score_index           <= '0;
-        draw_score_x               <= '0;
-        draw_score_y               <= '0;
-        draw_score_addr_1          <= '0;
-        draw_score_addr_2          <= '0;
-        draw_score_addr_3          <= '0;
-        digits_image_rom_addr      <= '0;
-        wr_en                      <= '0;
-        wr_addr                    <= '0;
-        wr_data                    <= '0;
-        lose                       <= 1'b0;
-        bird_y                     <= VER_ACTIVE_PIXELS / 2 - BIRD_HEIGHT / 2;
-        score_bcd                  <= '0;
+        state                        <= CHECK_LOSE;
+        pipe_offset                  <= '0;
+        pipes_y                      <= '0;
+        draw_bird_x                  <= '0;
+        draw_bird_y                  <= '0;
+        draw_bird_last_x             <= '0;
+        draw_bird_last_y             <= '0;
+        bird_image_rom_addr          <= '0;
+        draw_pipes_pipe              <= '0;
+        draw_pipes_x                 <= '0;
+        draw_pipes_y                 <= '0;
+        draw_pipes_pipe_y            <= '0;
+        draw_pipes_inv_x             <= '0;
+        draw_pipes_real_x            <= '0;
+        draw_pipes_check_collision_1 <= '0;
+        draw_pipes_check_collision_2 <= '0;
+        draw_pipes_check_collision_3 <= '0;
+        draw_score_index             <= '0;
+        draw_score_x                 <= '0;
+        draw_score_y                 <= '0;
+        draw_score_addr_1            <= '0;
+        draw_score_addr_2            <= '0;
+        draw_score_addr_3            <= '0;
+        digits_image_rom_addr        <= '0;
+        wr_en                        <= '0;
+        wr_addr                      <= '0;
+        wr_data                      <= '0;
+        lose                         <= '0;
+        bird_y                       <= VER_ACTIVE_PIXELS / 2 - BIRD_HEIGHT / 2;
+        score_bcd                    <= '0;
     end else if (ce) case (state)
         CHECK_LOSE: begin
             state <= lose ? DRAW_BACKGROUND_START : MOVE_BIRD;
@@ -261,20 +265,19 @@ always_ff @(posedge clk) begin
             state <= DRAW_PIPES_WORK;
         end
         DRAW_PIPES_WORK: begin
-            wr_en   <= (draw_pipes_pipe_y != '0 && draw_pipes_inv_x < HOR_ACTIVE_PIXELS) && (draw_pipes_y <= draw_pipes_pipe_y || draw_pipes_y >= draw_pipes_pipe_y + PIPE_VER_GAP); // STA slack
+            wr_en   <= (draw_pipes_pipe_y != '0 && draw_pipes_inv_x < HOR_ACTIVE_PIXELS) && (draw_pipes_y <= draw_pipes_pipe_y || draw_pipes_y >= draw_pipes_pipe_y + PIPE_VER_GAP);
             wr_addr <= draw_pipes_y * HOR_ACTIVE_PIXELS + draw_pipes_real_x;
             wr_data <= 1'b1;
 
             bird_image_rom_addr <= (draw_pipes_y - bird_y) / 2 * BIRD_WIDTH / 2 + (draw_pipes_real_x - BIRD_HOR_OFFSET) / 2;
-            draw_pipes_check_collision <= (draw_pipes_y >= bird_y
-                      && draw_pipes_y <= bird_y + BIRD_HEIGHT)
-                      && (draw_pipes_real_x >= BIRD_HOR_OFFSET
-                      && draw_pipes_real_x <= BIRD_HOR_OFFSET + BIRD_WIDTH); // STA slack
+            draw_pipes_check_collision_1 <= draw_pipes_y >= bird_y && draw_pipes_y <= bird_y + BIRD_HEIGHT;
+            draw_pipes_check_collision_2 <= draw_pipes_real_x >= BIRD_HOR_OFFSET;
+            draw_pipes_check_collision_3 <= draw_pipes_real_x <= BIRD_HOR_OFFSET + BIRD_WIDTH;
 
             state <= DRAW_PIPES_CHECK_COLLISION;
         end
         DRAW_PIPES_CHECK_COLLISION: begin
-            if (wr_en && draw_pipes_check_collision && bird_image_rom_out) begin
+            if ((wr_en && draw_pipes_check_collision_1) && (draw_pipes_check_collision_2 && draw_pipes_check_collision_3) && bird_image_rom_out) begin
                 lose <= 1'b1;
             end
 
