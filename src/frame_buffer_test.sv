@@ -42,12 +42,12 @@ output reg                     wr_data;
 
 // Wires/regs
 
-// Assignments
-
 state_t state;
 
 reg [HOR_ACTIVE_PIXELS_WIDTH-1:0] x;
 reg [VER_ACTIVE_PIXELS_WIDTH-1:0] y;
+
+// Assignments
 
 // Modules
 

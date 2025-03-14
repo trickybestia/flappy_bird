@@ -73,22 +73,24 @@ output reg lose;
 
 // Wires/regs
 
+// modules outputs
+wire                               bird_image_rom_out;
+wire [SCORE_DIGITS*4-1:0]          score_adder_out;
+wire [VER_ACTIVE_PIXELS_WIDTH-1:0] lfsr_rng_out;
+wire                               digits_image_rom_out;
+
+// state
 state_t state;
 
-reg [VER_ACTIVE_PIXELS_WIDTH-1:0] bird_y;
-
-reg  [SCORE_DIGITS*4-1:0] score_bcd;
-wire [SCORE_DIGITS*4-1:0] score_adder_out;
-
-reg [HOR_ACTIVE_PIXELS_WIDTH-1:0] pipe_offset;
-
+reg [VER_ACTIVE_PIXELS_WIDTH-1:0]             bird_y;
+reg [SCORE_DIGITS*4-1:0]                      score_bcd;
+reg [HOR_ACTIVE_PIXELS_WIDTH-1:0]             pipe_offset;
 reg [VER_ACTIVE_PIXELS_WIDTH*PIPES_COUNT-1:0] pipes_y;
 
 // DRAW_BIRD
 reg  [$clog2(BIRD_WIDTH)-1:0]  draw_bird_x, draw_bird_last_x;
 reg  [$clog2(BIRD_HEIGHT)-1:0] draw_bird_y, draw_bird_last_y;
 reg  [7:0]                     bird_image_rom_addr;
-wire                           bird_image_rom_out;
 
 // DRAW_PIPES
 reg [3:0]                         draw_pipes_pipe;
@@ -101,14 +103,11 @@ reg                               draw_pipes_check_collision_1;
 reg                               draw_pipes_check_collision_2;
 reg                               draw_pipes_check_collision_3;
 
-wire [VER_ACTIVE_PIXELS_WIDTH-1:0] lfsr_rng_out;
-
 // DRAW_SCORE
 reg  [$clog2(SCORE_DIGITS+1)-1:0]     draw_score_index;
 reg  [$clog2(SCORE_DIGIT_HEIGHT)-1:0] draw_score_y;
 reg  [$clog2(SCORE_DIGIT_WIDTH)-1:0]  draw_score_x;
 reg  [8:0]                            digits_image_rom_addr;
-wire                                  digits_image_rom_out;
 reg  [WR_ADDR_WIDTH-1:0]              draw_score_addr_1, draw_score_addr_2, draw_score_addr_3;
 
 // Assignments
@@ -149,14 +148,21 @@ bcd_ripple_carry_adder #(
 
 always_ff @(posedge clk) begin
     if (rst) begin
-        state                        <= CHECK_LOSE;
-        pipe_offset                  <= '0;
-        pipes_y                      <= '0;
-        draw_bird_x                  <= '0;
-        draw_bird_y                  <= '0;
-        draw_bird_last_x             <= '0;
-        draw_bird_last_y             <= '0;
-        bird_image_rom_addr          <= '0;
+        // state
+        state       <= CHECK_LOSE;
+        bird_y      <= VER_ACTIVE_PIXELS / 2 - BIRD_HEIGHT / 2;
+        score_bcd   <= '0;
+        pipe_offset <= '0;
+        pipes_y     <= '0;
+
+        // DRAW_BIRD
+        draw_bird_x         <= '0;
+        draw_bird_y         <= '0;
+        draw_bird_last_x    <= '0;
+        draw_bird_last_y    <= '0;
+        bird_image_rom_addr <= '0;
+
+        // DRAW_PIPES
         draw_pipes_pipe              <= '0;
         draw_pipes_x                 <= '0;
         draw_pipes_y                 <= '0;
@@ -166,20 +172,22 @@ always_ff @(posedge clk) begin
         draw_pipes_check_collision_1 <= '0;
         draw_pipes_check_collision_2 <= '0;
         draw_pipes_check_collision_3 <= '0;
-        draw_score_index             <= '0;
-        draw_score_x                 <= '0;
-        draw_score_y                 <= '0;
-        draw_score_addr_1            <= '0;
-        draw_score_addr_2            <= '0;
-        draw_score_addr_3            <= '0;
-        digits_image_rom_addr        <= '0;
-        wr_en                        <= '0;
-        wr_addr                      <= '0;
-        wr_data                      <= '0;
-        lose                         <= '0;
-        bird_y                       <= VER_ACTIVE_PIXELS / 2 - BIRD_HEIGHT / 2;
-        score_bcd                    <= '0;
-    end else if (ce) case (state)
+
+        // DRAW_SCORE
+        draw_score_index      <= '0;
+        draw_score_x          <= '0;
+        draw_score_y          <= '0;
+        draw_score_addr_1     <= '0;
+        draw_score_addr_2     <= '0;
+        draw_score_addr_3     <= '0;
+        digits_image_rom_addr <= '0;
+
+        // output ports
+        wr_en   <= '0;
+        wr_addr <= '0;
+        wr_data <= '0;
+        lose    <= '0;
+    end else if (ce) unique case (state)
         CHECK_LOSE: begin
             state <= lose ? DRAW_BACKGROUND_START : MOVE_BIRD;
         end
