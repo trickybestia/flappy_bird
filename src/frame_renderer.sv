@@ -51,30 +51,28 @@ output reg                     wr_en;
 output reg [WR_ADDR_WIDTH-1:0] wr_addr;
 output reg                     wr_data;
 
-output reg lose;
+output lose;
 
 // Wires/regs
 
-gpu_op_t fifo_op_out;
-wire     fifo_empty;
-wire     fifo_rd_en;
-
-wire fifo_full;
+gpu_op_t op;
+wire     op_valid;
+wire     op_ready;
 
 // Assignments
 
 // Modules
 
-gpu_fifo gpu_fifo_inst (
-    .Data('0), //input [61:0] Data
-    .Reset(rst | swap), //input Reset
-    .WrClk(clk), //input WrClk
-    .RdClk(clk), //input RdClk
-    .WrEn(1'b0), //input WrEn
-    .RdEn(fifo_rd_en), //input RdEn
-    .Q(fifo_op_out), //output [61:0] Q
-    .Empty(fifo_empty), //output Empty
-    .Full(fifo_full) //output Full
+cpu cpu_inst (
+    .clk,
+    .rst,
+    .ce,
+    .btn,
+    .swap,
+    .op,
+    .op_valid,
+    .op_ready,
+    .lose
 );
 
 gpu #(
@@ -84,9 +82,9 @@ gpu #(
     .clk,
     .rst(rst | swap),
     .ce,
-    .fifo_op(fifo_op_out),
-    .fifo_empty,
-    .fifo_rd_en,
+    .op,
+    .op_valid,
+    .op_ready,
     .wr_en,
     .wr_addr,
     .wr_data
