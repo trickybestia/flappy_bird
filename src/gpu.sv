@@ -1,10 +1,4 @@
-typedef struct packed {
-    logic [10:0] x, y, width, height; // 11 * 4
-    logic        color;               // 1
-    logic        mem_en;              // 1
-    logic [10:0] mem_addr;            // 11
-    logic [2:0]  scale;               // 3
-} gpu_op_t;                           // 60
+`include "gpu_op_t.sv"
 
 module gpu #(
     parameter HOR_ACTIVE_PIXELS,
@@ -25,6 +19,7 @@ module gpu #(
 
 typedef enum {
     WAIT_OP,
+    WAIT_ASSET_MEM,
     WORK
 } state_t;
 
@@ -46,6 +41,8 @@ output reg        wr_data;
 
 state_t state;
 
+gpu_op_t cur_op;
+
 reg [10:0] cur_rel_x, cur_rel_y;
 
 reg  [9:0] asset_mem_addr;
@@ -64,6 +61,7 @@ end
 always_ff @(posedge clk) begin
     if (rst) begin
         state          <= WAIT_OP;
+        cur_op         <= '0;
         cur_rel_x      <= '0;
         cur_rel_y      <= '0;
         asset_mem_addr <= '0;
@@ -72,24 +70,31 @@ always_ff @(posedge clk) begin
         wr_addr        <= '0;
         wr_data        <= '0;
     end else if (ce) begin
-        wr_addr        <= (cur_rel_y + op.y) * HOR_ACTIVE_PIXELS + cur_rel_x + op.x;
-        asset_mem_addr <= op.mem_addr + ((cur_rel_y * op.height + cur_rel_x) >> op.scale);
-        wr_data        <= op.mem_en ? asset_mem_out : op.color;
+        wr_addr        <= (cur_rel_y + cur_op.y) * HOR_ACTIVE_PIXELS + cur_rel_x + cur_op.x;
+        asset_mem_addr <= cur_op.mem_addr + ((cur_rel_y * cur_op.height + cur_rel_x) >> cur_op.scale);
+        wr_data        <= cur_op.mem_en ? asset_mem_out : cur_op.color;
 
         unique case (state)
             WAIT_OP: begin
-                wr_en    <= '0;
-                op_ready <= '0;
+                wr_en     <= '0;
+                op_ready  <= 1'b1;
+                cur_rel_x <= '0;
+                cur_rel_y <= '0;
 
                 if (op_valid) begin
-                    state <= WORK;
+                    cur_op <= op;
+                    state  <= WAIT_ASSET_MEM;
                 end
+            end
+            WAIT_ASSET_MEM: begin
+                op_ready <= '0;
+                state    <= WORK;
             end
             WORK: begin
                 wr_en <= 1'b1;
 
-                if (cur_rel_x == op.width - 1) begin
-                    if (cur_rel_y == op.height - 1) begin
+                if (cur_rel_x == cur_op.width - 1) begin
+                    if (cur_rel_y == cur_op.height - 1) begin
                         op_ready <= 1'b1;
                         state    <= WAIT_OP;
                     end else begin

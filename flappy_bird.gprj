@@ -16,6 +16,7 @@
         <File path="src/frame_buffer_test.sv" type="file.verilog" enable="1"/>
         <File path="src/frame_renderer.sv" type="file.verilog" enable="1"/>
         <File path="src/gpu.sv" type="file.verilog" enable="1"/>
+        <File path="src/gpu_op_t.sv" type="file.verilog" enable="1"/>
         <File path="src/lfsr_rng.sv" type="file.verilog" enable="1"/>
         <File path="src/pixel_iterator.sv" type="file.verilog" enable="1"/>
         <File path="src/rgb_clock_pll/rgb_clock_pll.v" type="file.verilog" enable="1"/>

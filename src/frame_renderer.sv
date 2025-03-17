@@ -63,7 +63,10 @@ wire     op_ready;
 
 // Modules
 
-cpu cpu_inst (
+cpu #(
+    .HOR_ACTIVE_PIXELS(HOR_ACTIVE_PIXELS),
+    .VER_ACTIVE_PIXELS(VER_ACTIVE_PIXELS)
+) cpu_inst (
     .clk,
     .rst,
     .ce,
