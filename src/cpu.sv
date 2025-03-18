@@ -20,7 +20,6 @@ module cpu #(
 );
 
 typedef enum {
-    WORK,
     CHECK_LOSE,
     MOVE_BIRD,
     MOVE_PIPES,
@@ -34,6 +33,20 @@ typedef enum {
 } state_t;
 
 // Parameters
+
+parameter BIRD_WIDTH         = 34;
+parameter BIRD_HEIGHT        = 24;
+parameter BIRD_HOR_OFFSET    = 20;
+parameter PIPE_VER_GAP       = 200;
+parameter PIPE_HOR_GAP       = 150;
+parameter PIPE_WIDTH         = 40;
+parameter PIPES_COUNT        = 5;
+parameter SCORE_DIGITS       = 3;
+parameter SCORE_VER_OFFSET   = 10;
+parameter SCORE_HOR_OFFSET   = 490;
+parameter SCORE_HOR_GAP      = 10;
+parameter SCORE_DIGIT_WIDTH  = 5*8;
+parameter SCORE_DIGIT_HEIGHT = 9*8;
 
 // Ports
 
@@ -54,7 +67,7 @@ output reg lose;
 state_t state;
 state_t wait_op_ready_next_state;
 
-reg [10:0] x, y;
+reg [10:0] bird_y;
 
 // Assignments
 
@@ -64,51 +77,66 @@ reg [10:0] x, y;
 
 initial begin
     state                    = WAIT_OP_READY_2;
-    wait_op_ready_next_state = WORK;
+    wait_op_ready_next_state = CHECK_LOSE;
+    bird_y                   = VER_ACTIVE_PIXELS / 2 - BIRD_HEIGHT / 2;
 end
 
 always_ff @(posedge clk) begin
     if (rst) begin
         state                    <= WAIT_OP_READY_2;
-        wait_op_ready_next_state <= WORK;
-        x <= '0;
-        y <= '0;
+        wait_op_ready_next_state <= CHECK_LOSE;
+        bird_y                   <= VER_ACTIVE_PIXELS / 2 - BIRD_HEIGHT / 2;
         op                       <= '0;
         op_valid                 <= '0;
         lose                     <= '0;
     end else if (ce) begin
-        lose <= state == WAIT_SWAP;
-
         unique case (state)
-            WORK: begin
+            CHECK_LOSE: begin
+                state <= lose ? DRAW_BACKGROUND : MOVE_BIRD;
+            end
+            MOVE_BIRD: begin
+                state <= MOVE_PIPES;
+            end
+            MOVE_PIPES: begin
+                state <= DRAW_BACKGROUND;
+            end
+            DRAW_BACKGROUND: begin
                 op_valid <= 1'b1;
-                op       <= {
-                    x,     // x
-                    y,     // y
-                    11'd1, // width
-                    11'd1, // height
-                    1'b1,  // color
-                    1'b0,  // mem_en
-                    11'd0, // mem_addr
-                    3'd0   // scale
+                op       <= '{
+                    x:        '0,
+                    y:        '0,
+                    width:    HOR_ACTIVE_PIXELS,
+                    height:   VER_ACTIVE_PIXELS,
+                    color:    '0,
+                    mem_en:   '0,
+                    mem_addr: '0,
+                    scale:    '0
                 };
 
-                if (x == HOR_ACTIVE_PIXELS - 1) begin
-                    x <= '0;
+                state                    <= WAIT_OP_READY_1;
+                wait_op_ready_next_state <= DRAW_BIRD;
+            end
+            DRAW_BIRD: begin
+                op_valid <= 1'b1;
+                op       <= '{
+                    x:        BIRD_HOR_OFFSET,
+                    y:        bird_y,
+                    width:    BIRD_WIDTH,
+                    height:   BIRD_HEIGHT,
+                    color:    '0,
+                    mem_en:   1'b1,
+                    mem_addr: '0,
+                    scale:    1'b1
+                };
 
-                    if (y == VER_ACTIVE_PIXELS - 1) begin
-                        y                        <= '0;
-                        wait_op_ready_next_state <= WAIT_SWAP;
-                    end else begin
-                        y                        <= y + 1;
-                        wait_op_ready_next_state <= WORK;
-                    end
-                end else begin
-                    x                        <= x + 1;
-                    wait_op_ready_next_state <= WORK;
-                end
-
-                state <= WAIT_OP_READY_1;
+                state                    <= WAIT_OP_READY_1;
+                wait_op_ready_next_state <= DRAW_PIPES;
+            end
+            DRAW_PIPES: begin
+                state <= DRAW_SCORE;
+            end
+            DRAW_SCORE: begin
+                state <= WAIT_SWAP;
             end
             WAIT_OP_READY_1: begin
                 op_valid <= '0;
@@ -122,7 +150,7 @@ always_ff @(posedge clk) begin
             end
             WAIT_SWAP: begin
                 if (swap) begin
-                    state <= WORK;
+                    state <= CHECK_LOSE;
                 end
             end
         endcase

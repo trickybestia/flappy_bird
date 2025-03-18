@@ -44,21 +44,24 @@ state_t state;
 
 gpu_op_t cur_op;
 
+reg [10:0] prev_rel_x, prev_rel_y;
 reg [10:0] cur_rel_x, cur_rel_y;
+
+reg [10:0] next_rel_x, next_rel_y;
+reg        xy_iter_done;
 
 reg  [9:0] asset_mem_addr;
 wire       asset_mem_out;
 
 // Assignments
 
+//assign wr_data = 
+
 // Modules
 
 asset_mem #(
     .SIZE(654)
 ) asset_mem_inst (
-    .clk,
-    .rst,
-    .ce,
     .addr(asset_mem_addr),
     .out(asset_mem_out)
 );
@@ -69,20 +72,40 @@ initial begin
     state = WAIT_OP_1;
 end
 
+always_comb begin
+    xy_iter_done = 1'b0;
+
+    if (cur_rel_x == cur_op.width - 1) begin
+        next_rel_x = '0;
+
+        if (cur_rel_y == cur_op.height - 1) begin
+            next_rel_y   = '0;
+            xy_iter_done = 1'b1;
+        end else begin
+            next_rel_y = cur_rel_y + 1;
+        end
+    end else begin
+        next_rel_x = cur_rel_x + 1;
+        next_rel_y = cur_rel_y;
+    end
+end
+
 always_ff @(posedge clk) begin
     if (rst) begin
         state          <= WAIT_OP_1;
         cur_op         <= '0;
         cur_rel_x      <= '0;
         cur_rel_y      <= '0;
+        prev_rel_x     <= '0;
+        prev_rel_y     <= '0;
         asset_mem_addr <= '0;
         op_ready       <= '0;
         wr_en          <= '0;
         wr_addr        <= '0;
         wr_data        <= '0;
     end else if (ce) begin
-        wr_addr        <= (cur_rel_y + cur_op.y) * HOR_ACTIVE_PIXELS + cur_rel_x + cur_op.x;
-        asset_mem_addr <= cur_op.mem_addr + ((cur_rel_y * cur_op.height + cur_rel_x) >> cur_op.scale); // here bug
+        wr_addr        <= (prev_rel_y + cur_op.y) * HOR_ACTIVE_PIXELS + prev_rel_x + cur_op.x;
+        asset_mem_addr <= cur_op.mem_addr + (cur_rel_y >> cur_op.scale) * (cur_op.width >> cur_op.scale) + (cur_rel_x >> cur_op.scale);
         wr_data        <= cur_op.mem_en ? asset_mem_out : cur_op.color;
 
         unique case (state)
@@ -111,17 +134,13 @@ always_ff @(posedge clk) begin
             WORK: begin
                 wr_en <= 1'b1;
 
-                if (cur_rel_x == cur_op.width - 1) begin
-                    cur_rel_x <= '0;
+                prev_rel_x <= cur_rel_x;
+                prev_rel_y <= cur_rel_y;
+                cur_rel_x <= next_rel_x;
+                cur_rel_y <= next_rel_y;
 
-                    if (cur_rel_y == cur_op.height - 1) begin
-                        cur_rel_y <= '0;
-                        state     <= WAIT_OP_1;
-                    end else begin
-                        cur_rel_y <= cur_rel_y + 1;
-                    end
-                end else begin
-                    cur_rel_x <= cur_rel_x + 1;
+                if (xy_iter_done) begin
+                    state <= WAIT_OP_1;
                 end
             end
         endcase

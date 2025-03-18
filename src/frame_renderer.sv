@@ -19,23 +19,7 @@ module frame_renderer #(
 
 // Parameters
 
-parameter BIRD_WIDTH         = 34;
-parameter BIRD_HEIGHT        = 24;
-parameter BIRD_HOR_OFFSET    = 20;
-parameter PIPE_VER_GAP       = 200;
-parameter PIPE_HOR_GAP       = 150;
-parameter PIPE_WIDTH         = 40;
-parameter PIPES_COUNT        = 5;
-parameter SCORE_DIGITS       = 3;
-parameter SCORE_VER_OFFSET   = 10;
-parameter SCORE_HOR_OFFSET   = 490;
-parameter SCORE_HOR_GAP      = 10;
-parameter SCORE_DIGIT_WIDTH  = 5*8;
-parameter SCORE_DIGIT_HEIGHT = 9*8;
-
 localparam WR_ADDR_WIDTH = $clog2(HOR_ACTIVE_PIXELS * VER_ACTIVE_PIXELS);
-localparam HOR_ACTIVE_PIXELS_WIDTH = $clog2(HOR_ACTIVE_PIXELS);
-localparam VER_ACTIVE_PIXELS_WIDTH = $clog2(VER_ACTIVE_PIXELS);
 
 // Ports
 
