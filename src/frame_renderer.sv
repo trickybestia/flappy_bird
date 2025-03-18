@@ -83,7 +83,7 @@ gpu #(
     .VER_ACTIVE_PIXELS(VER_ACTIVE_PIXELS)
 ) gpu_inst (
     .clk,
-    .rst(rst | swap),
+    .rst,
     .ce,
     .op,
     .op_valid,

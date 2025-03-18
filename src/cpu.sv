@@ -19,9 +19,17 @@ module cpu #(
     lose
 );
 
-typedef enum logic [1:0] {
+typedef enum {
     WORK,
-    WORK_WAIT_READY,
+    CHECK_LOSE,
+    MOVE_BIRD,
+    MOVE_PIPES,
+    DRAW_BACKGROUND,
+    DRAW_BIRD,
+    DRAW_PIPES,
+    DRAW_SCORE,
+    WAIT_OP_READY_1,
+    WAIT_OP_READY_2,
     WAIT_SWAP
 } state_t;
 
@@ -44,6 +52,7 @@ output reg lose;
 // Wires/regs
 
 state_t state;
+state_t wait_op_ready_next_state;
 
 reg [10:0] x, y;
 
@@ -53,14 +62,23 @@ reg [10:0] x, y;
 
 // Processes
 
+initial begin
+    state                    = WAIT_OP_READY_2;
+    wait_op_ready_next_state = WORK;
+end
+
 always_ff @(posedge clk) begin
     if (rst) begin
-        state    <= WORK;
-        x        <= '0;
-        y        <= '0;
-        op       <= '0;
-        op_valid <= '0;
+        state                    <= WAIT_OP_READY_2;
+        wait_op_ready_next_state <= WORK;
+        x <= '0;
+        y <= '0;
+        op                       <= '0;
+        op_valid                 <= '0;
+        lose                     <= '0;
     end else if (ce) begin
+        lose <= state == WAIT_SWAP;
+
         unique case (state)
             WORK: begin
                 op_valid <= 1'b1;
@@ -79,33 +97,34 @@ always_ff @(posedge clk) begin
                     x <= '0;
 
                     if (y == VER_ACTIVE_PIXELS - 1) begin
-                        y     <= '0;
-                        state <= WAIT_SWAP;
+                        y                        <= '0;
+                        wait_op_ready_next_state <= WAIT_SWAP;
                     end else begin
-                        y     <= y + 1;
-                        state <= WORK_WAIT_READY;
+                        y                        <= y + 1;
+                        wait_op_ready_next_state <= WORK;
                     end
                 end else begin
-                    x     <= x + 1;
-                    state <= WORK_WAIT_READY;
+                    x                        <= x + 1;
+                    wait_op_ready_next_state <= WORK;
                 end
+
+                state <= WAIT_OP_READY_1;
             end
-            WORK_WAIT_READY: begin
+            WAIT_OP_READY_1: begin
+                op_valid <= '0;
+
+                state <= WAIT_OP_READY_2;
+            end
+            WAIT_OP_READY_2: begin
                 if (op_ready) begin
-                    op_valid <= '0;
-                    state    <= WORK;
+                    state <= wait_op_ready_next_state;
                 end
             end
             WAIT_SWAP: begin
-                if (op_ready) begin
-                    op_valid <= '0;
-                end
-
                 if (swap) begin
                     state <= WORK;
                 end
             end
-            
         endcase
     end
 end
