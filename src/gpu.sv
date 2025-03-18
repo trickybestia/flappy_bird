@@ -55,8 +55,6 @@ wire       asset_mem_out;
 
 // Assignments
 
-//assign wr_data = 
-
 // Modules
 
 asset_mem #(
