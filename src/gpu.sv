@@ -53,6 +53,16 @@ wire       asset_mem_out;
 
 // Modules
 
+asset_mem #(
+    .SIZE(654)
+) asset_mem_inst (
+    .clk,
+    .rst,
+    .ce,
+    .addr(asset_mem_addr),
+    .out(asset_mem_out)
+);
+
 // Processes
 
 initial begin
