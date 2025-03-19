@@ -46,6 +46,13 @@ output [2:0] tmds_data_p, tmds_data_n;
 // Wires/regs
 
 wire [4:0] buttons = ~buttons_n;
+
+// Debouncing buttons for all clocks
+wire [4:0] buttons_debounced_clk_27M;
+wire [4:0] buttons_debounced_clk_rgb;
+wire [4:0] buttons_debounced_clk_tmds;
+wire [4:0] buttons_debounced_clk_renderer;
+
 wire [5:0] leds;
 
 wire clk_rgb;
@@ -53,7 +60,6 @@ wire clk_tmds;
 wire clk_renderer;
 
 wire ce  = all_pll_lock;
-wire rst = buttons[0];
 
 wire [7:0] r_test, g_test, b_test; // RGB from video_test
 wire [7:0] r_test_1, g_test_1, b_test_1; // RGB from video_test_1
@@ -84,7 +90,7 @@ wire all_pll_lock = rgb_pll_lock & tmds_pll_lock;
 // Assignments
 
 assign leds_n  = ~leds;
-assign leds[0] = rst;
+assign leds[0] = buttons[0]; // rst
 assign leds[1] = rgb_pll_lock;
 assign leds[2] = tmds_pll_lock;
 
@@ -93,20 +99,52 @@ assign leds[2] = tmds_pll_lock;
 rgb_clock_pll rgb_clock_pll_inst (
     .clkout(clk_rgb),    //output clkout
     .lock(rgb_pll_lock), //output lock
-    .reset(rst),         //input reset
-    .clkin(clk_tmds)      //input clkin
+    .clkin(clk_tmds)     //input clkin
 );
 
 tmds_clock_pll tmds_clock_pll_inst (
     .clkout(clk_tmds),      //output clkout
     .lock(tmds_pll_lock),   //output lock
     .clkoutd(clk_renderer), //output clkoutd
-    .reset(rst),            //input reset
     .clkin(clk_27M)         //input clkin
 );
 
+generate
+    for (genvar i = 0; i != $size(buttons); i++) begin
+        btn_debouncer #(
+            .COUNTER_WIDTH(16)
+        ) btn_debouncer_clk_27M (
+            .clk(clk_27M),
+            .ce,
+            .btn(buttons[i]),
+            .btn_debounced(buttons_debounced_clk_27M[i])
+        );
+
+        synchronizer btn_synchronizer_clk_rgb (
+            .clk(clk_rgb),
+            .ce,
+            .in(buttons_debounced_clk_27M[i]),
+            .out(buttons_debounced_clk_rgb[i])
+        );
+
+        synchronizer btn_synchronizer_clk_tmds (
+            .clk(clk_tmds),
+            .ce,
+            .in(buttons_debounced_clk_27M[i]),
+            .out(buttons_debounced_clk_tmds[i])
+        );
+
+        synchronizer btn_synchronizer_clk_renderer (
+            .clk(clk_renderer),
+            .ce,
+            .in(buttons_debounced_clk_27M[i]),
+            .out(buttons_debounced_clk_renderer[i])
+        );
+    end
+endgenerate
+
 dvi_tx dvi_tx_inst (
-    .I_rst_n(!rst),              //input I_rst_n
+    .I_rst_n(1'b1),              //input I_rst_n
     .I_serial_clk(clk_tmds),     //input I_serial_clk
     .I_rgb_clk(clk_rgb),         //input I_rgb_clk
     .I_rgb_vs(vs),               //input I_rgb_vs
@@ -136,7 +174,7 @@ pixel_iterator #(
     .VER_SYNC_POLARITY(VER_SYNC_POLARITY)
 ) pixel_iterator_inst (
     .clk_rgb,
-    .rst,
+    .rst(buttons_debounced_clk_rgb[0]),
     .ce,
     .x,
     .y,
@@ -151,9 +189,9 @@ frame_buffer_test #(
     .VER_ACTIVE_PIXELS(VER_ACTIVE_PIXELS)
 ) frame_buffer_test_inst (
     .clk(clk_renderer),
-    .rst(rst | buttons[1]),
+    .rst(buttons_debounced_clk_renderer[0] | buttons_debounced_clk_renderer[1]),
     .ce,
-    .btn(buttons[2]),
+    .btn(buttons_debounced_clk_renderer[2]),
     .swap,
     .wr_en(frame_buffer_test_wr_en),
     .wr_addr(frame_buffer_test_wr_addr),
@@ -165,9 +203,9 @@ frame_renderer #(
     .VER_ACTIVE_PIXELS(VER_ACTIVE_PIXELS)
 ) frame_renderer_inst (
     .clk(clk_renderer),
-    .rst(rst | buttons[1]),
+    .rst(buttons_debounced_clk_renderer[0] | buttons_debounced_clk_renderer[1]),
     .ce,
-    .btn(buttons[2]),
+    .btn(buttons_debounced_clk_renderer[2]),
     .swap,
     .wr_en(frame_renderer_wr_en),
     .wr_addr(frame_renderer_wr_addr),
@@ -176,13 +214,14 @@ frame_renderer #(
 );
 
 frame_buffer frame_buffer_inst (
-    .rst,
     .ce,
     .wr_clk(clk_renderer),
+    .wr_rst(buttons_debounced_clk_renderer[0]),
     .wr_en(frame_buffer_wr_en),
     .wr_addr(frame_buffer_wr_addr),
     .wr_data(frame_buffer_wr_data),
     .rd_clk(clk_rgb),
+    .rd_rst(buttons_debounced_clk_rgb[0]),
     .rd_addr(y * HOR_ACTIVE_PIXELS + x + de),
     .rd_data(frame_buffer_rd_data),
     .swap
@@ -205,7 +244,7 @@ video_test_1 #(
 ) video_test_1_inst (
     .x,
     .y,
-    .btn(buttons[2]),
+    .btn(buttons_debounced_clk_rgb[2]),
     .r(r_test_1),
     .g(g_test_1),
     .b(b_test_1)
