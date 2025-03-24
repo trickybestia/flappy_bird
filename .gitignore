@@ -13,3 +13,4 @@
 # Waveforms
 *.vcd
 
+__pycache__
