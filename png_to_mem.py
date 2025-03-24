@@ -3,11 +3,12 @@ from pathlib import Path
 
 import PIL.Image
 
-result_path = argv[1]
+RESULT_PATH = "src/asset_mem.mem"
+SOURCE_IMAGES = ["bird.png", "digits.png"]
 
 result = []
 
-for image_path in argv[2:]:
+for image_path in SOURCE_IMAGES:
     image = PIL.Image.open(image_path)
 
     print(
@@ -18,4 +19,4 @@ for image_path in argv[2:]:
         for x in range(image.size[0]):
             result.append(image.getpixel((x, y)))
 
-Path(result_path).write_text("\n".join(map(str, result)))
+Path(RESULT_PATH).write_text("\n".join(map(str, result)))
