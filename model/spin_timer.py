@@ -2,7 +2,7 @@ from typing import Callable
 from time import time
 
 
-class SpinClock:
+class SpinTimer:
     on_tick: Callable[[], None]
 
     _running: bool

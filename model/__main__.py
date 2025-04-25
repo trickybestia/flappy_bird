@@ -3,7 +3,7 @@ import pygame
 from .cpu import Cpu, CpuInputs
 from .gpu import Gpu
 from .parameters import *
-from .spin_clock import SpinClock
+from .spin_timer import SpinTimer
 from .utils import read_mem
 
 GPU_MEM_PATH = "src/asset_mem.mem"
@@ -20,14 +20,14 @@ def main():
     lose = None
     btn = False
 
-    spin_clock = SpinClock(FPS)
+    timer = SpinTimer(FPS)
 
     def on_tick():
         nonlocal lose, btn
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                spin_clock.stop()
+                timer.stop()
 
                 return
             elif event.type == pygame.KEYDOWN:
@@ -46,9 +46,9 @@ def main():
 
         pygame.display.update()
 
-    spin_clock.on_tick = on_tick
+    timer.on_tick = on_tick
 
-    spin_clock.run()
+    timer.run()
 
     pygame.quit()
 
