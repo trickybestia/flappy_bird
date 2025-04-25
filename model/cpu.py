@@ -139,4 +139,31 @@ class Cpu:
             i += 1
 
     def _draw_score(self):
-        print("Score:", self.score)
+        score = self.score
+
+        for i in range(SCORE_DIGITS):
+            digit = score % 10
+            score //= 10
+
+            self._draw_digit(
+                HOR_ACTIVE_PIXELS
+                - SCORE_HOR_OFFSET
+                - SCORE_DIGIT_WIDTH
+                - (SCORE_HOR_GAP + SCORE_DIGIT_WIDTH) * i,
+                SCORE_VER_OFFSET,
+                digit,
+            )
+
+    def _draw_digit(self, x: int, y: int, value: int):
+        self.gpu.draw(
+            GpuOp(
+                x,
+                y,
+                SCORE_DIGIT_WIDTH,
+                SCORE_DIGIT_HEIGHT,
+                False,
+                True,
+                ASSET_MEM_DIGITS_START + ASSET_MEM_DIGITS_STEP * value,
+                3,
+            )
+        )
