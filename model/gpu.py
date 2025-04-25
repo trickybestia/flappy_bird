@@ -1,5 +1,8 @@
 from dataclasses import dataclass
 
+import pygame.draw
+from pygame import Surface
+
 
 @dataclass
 class GpuOp:
@@ -14,9 +17,30 @@ class GpuOp:
 
 
 class Gpu:
+    screen: Surface
     mem: list[bool]
 
-    def __init__(self, mem: list[bool]):
+    def __init__(self, mem: list[bool], screen: Surface):
         self.mem = mem
+        self.screen = screen
 
-    def draw(self, op: GpuOp): ...
+    def draw(self, op: GpuOp):
+        if op.mem_en:
+            for rel_x in range(op.width):
+                for rel_y in range(op.height):
+                    mem_address = (
+                        op.mem_addr
+                        + (rel_y >> op.scale) * (op.width >> op.scale)
+                        + (rel_x >> op.scale)
+                    )
+                    color = (
+                        (255, 255, 255) if self.mem[mem_address] else (0, 0, 0)
+                    )
+
+                    self.screen.set_at((op.x + rel_x, op.y + rel_y), color)
+        else:
+            pygame.draw.rect(
+                self.screen,
+                (255, 255, 255) if op.color else (0, 0, 0),
+                (op.x, op.y, op.width, op.height),
+            )

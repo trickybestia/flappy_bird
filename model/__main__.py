@@ -10,14 +10,14 @@ GPU_MEM_PATH = "src/asset_mem.mem"
 
 
 def main():
-    gpu = Gpu(read_mem(GPU_MEM_PATH))
-    cpu = Cpu(gpu)
-
-    lose = None
-
     pygame.init()
 
     screen = pygame.display.set_mode((HOR_ACTIVE_PIXELS, VER_ACTIVE_PIXELS))
+
+    gpu = Gpu(read_mem(GPU_MEM_PATH), screen)
+    cpu = Cpu(gpu)
+
+    lose = None
 
     spin_clock = SpinClock(FPS)
 

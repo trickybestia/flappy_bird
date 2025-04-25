@@ -17,10 +17,12 @@ class CpuOutputs:
 class Cpu:
     gpu: Gpu
     lose: bool
+    bird_y: int
 
     def __init__(self, gpu: Gpu):
         self.gpu = gpu
         self.lose = False
+        self.bird_y = VER_ACTIVE_PIXELS // 2 - BIRD_HEIGHT // 2
 
     def draw_frame(self, inputs: CpuInputs) -> CpuOutputs:
         self.gpu.draw(
@@ -33,6 +35,18 @@ class Cpu:
                 mem_en=0,
                 mem_addr=0,
                 scale=0,
+            )
+        )
+        self.gpu.draw(
+            GpuOp(
+                BIRD_HOR_OFFSET,
+                self.bird_y,
+                BIRD_WIDTH,
+                BIRD_HEIGHT,
+                False,
+                True,
+                0,
+                1,
             )
         )
 
