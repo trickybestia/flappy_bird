@@ -18,19 +18,26 @@ def main():
     cpu = Cpu(gpu)
 
     lose = None
+    btn = False
 
     spin_clock = SpinClock(FPS)
 
     def on_tick():
-        nonlocal lose
+        nonlocal lose, btn
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 spin_clock.stop()
 
                 return
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    btn = True
+            elif event.type == pygame.KEYUP:
+                if event.key == pygame.K_SPACE:
+                    btn = False
 
-        cpu_outputs = cpu.draw_frame(CpuInputs(False))
+        cpu_outputs = cpu.draw_frame(CpuInputs(btn))
 
         if cpu_outputs.lose != lose:
             lose = cpu_outputs.lose
