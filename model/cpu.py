@@ -3,6 +3,7 @@ from random import randint
 
 from .gpu import Gpu, GpuOp
 from .parameters import *
+from .utils import check_rectangles_intersection
 
 
 @dataclass
@@ -41,6 +42,7 @@ class Cpu:
         if not self.lose:
             self._move_bird(inputs)
             self._move_pipes()
+            self._check_collision()
 
         self._draw_bird()
         self._draw_pipes()
@@ -87,6 +89,31 @@ class Cpu:
             pipe_y = randint(0, VER_ACTIVE_PIXELS - PIPE_VER_GAP)
 
             self.pipes.append(Pipe(HOR_ACTIVE_PIXELS, pipe_y))
+
+    def _check_collision(self):
+        for pipe in self.pipes:
+            if check_rectangles_intersection(
+                BIRD_HOR_OFFSET,
+                self.bird_y,
+                BIRD_WIDTH,
+                BIRD_HEIGHT,
+                pipe.x,
+                0,
+                PIPE_WIDTH,
+                pipe.y,
+            ) or check_rectangles_intersection(
+                BIRD_HOR_OFFSET,
+                self.bird_y,
+                BIRD_WIDTH,
+                BIRD_HEIGHT,
+                pipe.x,
+                pipe.y + PIPE_VER_GAP,
+                PIPE_WIDTH,
+                VER_ACTIVE_PIXELS - pipe.y - PIPE_VER_GAP,
+            ):
+                self.lose = True
+
+                return
 
     def _draw_bird(self):
         self.gpu.draw(
