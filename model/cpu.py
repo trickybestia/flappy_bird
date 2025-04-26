@@ -137,7 +137,7 @@ class Cpu:
 
             start_x = max(pipe.x, 0)
             end_x = min(
-                pipe.x + PIPE_WIDTH, HOR_ACTIVE_PIXELS - 1
+                pipe.x + PIPE_WIDTH, HOR_ACTIVE_PIXELS
             )  # right x bound of pipe rectangle, exclusive
 
             if end_x <= 0:
