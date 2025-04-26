@@ -20,10 +20,11 @@ module cpu #(
 );
 
 typedef enum {
+    DRAW_BACKGROUND,
     CHECK_LOSE,
     MOVE_BIRD,
     MOVE_PIPES,
-    DRAW_BACKGROUND,
+    CHECK_COLLISION,
     DRAW_BIRD,
     DRAW_PIPES,
     DRAW_SCORE,
@@ -75,31 +76,31 @@ reg [10:0] bird_y;
 
 // Processes
 
+task automatic wait_gpu (
+    input state_t next_state
+);
+    begin
+        state                    <= WAIT_OP_READY_1;
+        wait_op_ready_next_state <= next_state;
+    end
+endtask
+
 initial begin
-    state                    = WAIT_OP_READY_2;
-    wait_op_ready_next_state = CHECK_LOSE;
-    bird_y                   = VER_ACTIVE_PIXELS / 2 - BIRD_HEIGHT / 2;
+    state                    <= WAIT_OP_READY_2;
+    wait_op_ready_next_state <= DRAW_BACKGROUND;
+    bird_y                   <= VER_ACTIVE_PIXELS / 2 - BIRD_HEIGHT / 2;
 end
 
 always_ff @(posedge clk) begin
     if (rst) begin
         state                    <= WAIT_OP_READY_2;
-        wait_op_ready_next_state <= CHECK_LOSE;
+        wait_op_ready_next_state <= DRAW_BACKGROUND;
         bird_y                   <= VER_ACTIVE_PIXELS / 2 - BIRD_HEIGHT / 2;
         op                       <= '0;
         op_valid                 <= '0;
         lose                     <= '0;
     end else if (ce) begin
         unique case (state)
-            CHECK_LOSE: begin
-                state <= lose ? DRAW_BACKGROUND : MOVE_BIRD;
-            end
-            MOVE_BIRD: begin
-                state <= MOVE_PIPES;
-            end
-            MOVE_PIPES: begin
-                state <= DRAW_BACKGROUND;
-            end
             DRAW_BACKGROUND: begin
                 op_valid <= 1'b1;
                 op       <= '{
@@ -113,8 +114,19 @@ always_ff @(posedge clk) begin
                     scale:    '0
                 };
 
-                state                    <= WAIT_OP_READY_1;
-                wait_op_ready_next_state <= DRAW_BIRD;
+                wait_gpu(DRAW_BIRD);
+            end
+            CHECK_LOSE: begin
+                state <= lose ? DRAW_BACKGROUND : MOVE_BIRD;
+            end
+            MOVE_BIRD: begin
+                state <= MOVE_PIPES;
+            end
+            MOVE_PIPES: begin
+                state <= CHECK_COLLISION;
+            end
+            CHECK_COLLISION: begin
+                state <= DRAW_BIRD;
             end
             DRAW_BIRD: begin
                 op_valid <= 1'b1;
@@ -129,8 +141,7 @@ always_ff @(posedge clk) begin
                     scale:    1'b1
                 };
 
-                state                    <= WAIT_OP_READY_1;
-                wait_op_ready_next_state <= DRAW_PIPES;
+                wait_gpu(DRAW_PIPES);
             end
             DRAW_PIPES: begin
                 state <= DRAW_SCORE;
@@ -150,7 +161,7 @@ always_ff @(posedge clk) begin
             end
             WAIT_SWAP: begin
                 if (swap) begin
-                    state <= CHECK_LOSE;
+                    state <= DRAW_BACKGROUND;
                 end
             end
         endcase
