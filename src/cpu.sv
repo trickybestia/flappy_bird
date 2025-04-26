@@ -117,7 +117,11 @@ always_ff @(posedge clk) begin
                 wait_gpu(DRAW_BIRD);
             end
             CHECK_LOSE: begin
-                state <= lose ? DRAW_BACKGROUND : MOVE_BIRD;
+                if (lose) begin
+                    state <= DRAW_BIRD;
+                end else begin
+                    state <= MOVE_BIRD;
+                end
             end
             MOVE_BIRD: begin
                 if (btn) begin
