@@ -12,7 +12,9 @@ GPU_MEM_PATH = "src/asset_mem.mem"
 def main():
     pygame.init()
 
-    screen = pygame.display.set_mode((HOR_ACTIVE_PIXELS, VER_ACTIVE_PIXELS))
+    screen = pygame.display.set_mode(
+        (HOR_ACTIVE_PIXELS, VER_ACTIVE_PIXELS), vsync=1
+    )
 
     gpu = Gpu(read_mem(GPU_MEM_PATH), screen)
     cpu = Cpu(gpu)
