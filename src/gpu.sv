@@ -67,7 +67,17 @@ asset_mem #(
 // Processes
 
 initial begin
-    state = WAIT_OP_1;
+    state          <= WAIT_OP_1;
+    cur_op         <= '0;
+    cur_rel_x      <= '0;
+    cur_rel_y      <= '0;
+    prev_rel_x     <= '0;
+    prev_rel_y     <= '0;
+    asset_mem_addr <= '0;
+    op_ready       <= '0;
+    wr_en          <= '0;
+    wr_addr        <= '0;
+    wr_data        <= '0;
 end
 
 always_comb begin

@@ -1,4 +1,5 @@
 `include "gpu_op_t.sv"
+`include "pipe_t.sv"
 
 module cpu #(
     parameter HOR_ACTIVE_PIXELS,
@@ -89,6 +90,9 @@ initial begin
     state                    <= WAIT_OP_READY_2;
     wait_op_ready_next_state <= DRAW_BACKGROUND;
     bird_y                   <= VER_ACTIVE_PIXELS / 2 - BIRD_HEIGHT / 2;
+    op                       <= '0;
+    op_valid                 <= '0;
+    lose                     <= '0;
 end
 
 always_ff @(posedge clk) begin
