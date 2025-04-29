@@ -114,7 +114,7 @@ always_ff @(posedge clk) begin
                     scale:    '0
                 };
 
-                wait_gpu(DRAW_BIRD);
+                wait_gpu(CHECK_LOSE);
             end
             CHECK_LOSE: begin
                 if (lose) begin
