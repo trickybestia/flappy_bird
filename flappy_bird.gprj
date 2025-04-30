@@ -30,7 +30,7 @@
         <File path="src/video_test_1.sv" type="file.verilog" enable="1"/>
         <File path="tb/bcd_ripple_carry_adder_tb.sv" type="file.verilog" enable="0"/>
         <File path="tb/btn_debouncer_tb.sv" type="file.verilog" enable="0"/>
-        <File path="tb/fifo_tb.sv" type="file.verilog" enable="1"/>
+        <File path="tb/fifo_tb.sv" type="file.verilog" enable="0"/>
         <File path="tb/pipes_list_tb.sv" type="file.verilog" enable="0"/>
         <File path="tb/top_tb.sv" type="file.verilog" enable="0"/>
         <File path="src/flappy_bird.cst" type="file.cst" enable="1"/>
