@@ -88,7 +88,7 @@ class Cpu:
         ):
             pipe_y = randint(0, VER_ACTIVE_PIXELS - PIPE_VER_GAP)
 
-            self.pipes.append(Pipe(HOR_ACTIVE_PIXELS, pipe_y))
+            self.pipes.append(Pipe(HOR_ACTIVE_PIXELS - 1, pipe_y))
 
     def _check_collision(self):
         for pipe in self.pipes:
