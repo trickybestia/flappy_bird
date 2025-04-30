@@ -5,6 +5,8 @@ module pipes_list (
     rst,
     ce,
 
+    count,
+
     insert_en,
     insert_data,
 
@@ -21,6 +23,8 @@ module pipes_list (
 
 input clk, rst, ce;
 
+output [4:0] count;
+
 input        insert_en;
 input pipe_t insert_data;
 
@@ -32,14 +36,14 @@ input         iter_remove;
 
 // Wires/regs
 
-wire [4:0] fifo_count, items_count;
+wire [4:0] fifo_count;
 
 reg       iter_done_next;
 reg [4:0] iter_index, iter_index_next;
 
 // Assignments
 
-assign items_count = iter_done ? fifo_count : fifo_count + 1;
+assign count = iter_done ? fifo_count : fifo_count + 1;
 
 // Modules
 
@@ -70,7 +74,7 @@ always_comb begin
     if (iter_start) begin
         iter_index_next = 0;
     end else if (!iter_done) begin
-        if (iter_index == items_count - 1) begin
+        if (iter_index == count - 1) begin
             iter_index_next = 0;
         end else if (!iter_remove) begin
             iter_index_next = iter_index + 1;
@@ -95,7 +99,7 @@ always_comb begin
     if (iter_start) begin
         iter_done_next = fifo_count == 0;
     end else if (!iter_done) begin
-        iter_done_next = iter_index == items_count - 1;
+        iter_done_next = iter_index == count - 1;
     end else begin
         iter_done_next = iter_done;
     end

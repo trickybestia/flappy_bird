@@ -14,6 +14,8 @@ reg clk;
 reg rst;
 reg ce;
 
+wire [4:0] count;
+
 reg    insert_en;
 pipe_t insert_data;
 
@@ -31,6 +33,7 @@ pipes_list uut (
     .clk,
     .rst,
     .ce,
+    .count,
     .insert_en,
     .insert_data,
     .iter_start,
