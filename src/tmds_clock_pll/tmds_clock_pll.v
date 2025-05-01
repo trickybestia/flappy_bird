@@ -5,7 +5,7 @@
 //Part Number: GW2A-LV18PG256C8/I7
 //Device: GW2A-18
 //Device Version: C
-//Created Time: Thu May  1 15:15:02 2025
+//Created Time: Thu May  1 17:09:25 2025
 
 module tmds_clock_pll (clkout, lock, clkoutd, clkin);
 
@@ -55,7 +55,7 @@ defparam rpll_inst.CLKOUTP_DLY_STEP = 0;
 defparam rpll_inst.CLKFB_SEL = "internal";
 defparam rpll_inst.CLKOUT_BYPASS = "false";
 defparam rpll_inst.CLKOUTP_BYPASS = "false";
-defparam rpll_inst.CLKOUTD_BYPASS = "true";
+defparam rpll_inst.CLKOUTD_BYPASS = "false";
 defparam rpll_inst.DYN_SDIV_SEL = 2;
 defparam rpll_inst.CLKOUTD_SRC = "CLKOUT";
 defparam rpll_inst.CLKOUTD3_SRC = "CLKOUT";
