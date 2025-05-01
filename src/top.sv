@@ -90,7 +90,7 @@ wire all_pll_lock = tmds_pll_lock;
 
 assign leds_n  = ~leds;
 assign leds[0] = buttons[0]; // rst
-assign leds[1] = tmds_pll_lock;
+assign leds[1] = all_pll_lock;
 
 // Modules
 
@@ -209,7 +209,7 @@ frame_renderer #(
     .wr_en(frame_renderer_wr_en),
     .wr_addr(frame_renderer_wr_addr),
     .wr_data(frame_renderer_wr_data),
-    .lose(leds[3])
+    .leds(leds[5:2])
 );
 
 frame_buffer frame_buffer_inst (

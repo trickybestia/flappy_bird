@@ -14,7 +14,7 @@ module frame_renderer #(
     wr_addr,
     wr_data,
 
-    lose
+    leds
 );
 
 // Parameters
@@ -35,7 +35,7 @@ output reg                     wr_en;
 output reg [WR_ADDR_WIDTH-1:0] wr_addr;
 output reg                     wr_data;
 
-output lose;
+output [3:0] leds;
 
 // Wires/regs
 
@@ -59,7 +59,8 @@ cpu #(
     .op,
     .op_valid,
     .op_ready,
-    .lose
+    .lose(leds[0]),
+    .status_wait_gpu(leds[2])
 );
 
 gpu #(
@@ -74,7 +75,8 @@ gpu #(
     .op_ready,
     .wr_en,
     .wr_addr,
-    .wr_data
+    .wr_data,
+    .status_led(leds[1])
 );
 
 // Processes
