@@ -32,6 +32,11 @@ reg [INTERNAL_WIDTH-1:0] internal;
 
 // Processes
 
+initial begin
+    internal <= '1;
+    out      <= OUT_MIN;
+end
+
 always_ff @(posedge clk) begin
     if (rst) begin
         internal <= '1;
