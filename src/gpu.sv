@@ -14,7 +14,9 @@ module gpu #(
 
     wr_en,
     wr_addr,
-    wr_data
+    wr_data,
+
+    status_led
 );
 
 typedef enum logic [3:0] {
@@ -38,6 +40,8 @@ output reg        wr_en;
 output reg [20:0] wr_addr;
 output reg        wr_data;
 
+output status_led;
+
 // Wires/regs
 
 state_t state;
@@ -54,6 +58,8 @@ reg  [9:0] asset_mem_addr;
 wire       asset_mem_out;
 
 // Assignments
+
+assign status_led = state == WORK;
 
 // Modules
 
@@ -137,7 +143,12 @@ always_ff @(posedge clk) begin
             end
             WAIT_ASSET_MEM: begin
                 op_ready <= '0;
-                state    <= WORK;
+
+                if (cur_op.width == '0 || cur_op.height == '0) begin
+                    state <= WAIT_OP_1;
+                end else begin
+                    state <= WORK;
+                end
             end
             WORK: begin
                 wr_en <= 1'b1;
