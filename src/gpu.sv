@@ -9,8 +9,8 @@ module gpu #(
     ce,
 
     op,
-    op_valid,
-    op_ready,
+    op_rd_en,
+    op_empty,
 
     wr_en,
     wr_addr,
@@ -19,11 +19,10 @@ module gpu #(
     status_led
 );
 
-typedef enum logic [3:0] {
-    WAIT_OP_1      = 4'b0001,
-    WAIT_OP_2      = 4'b0010,
-    WAIT_ASSET_MEM = 4'b0100,
-    WORK           = 4'b1000
+typedef enum {
+    WAIT_OP        = 0,
+    WAIT_ASSET_MEM = 1,
+    WORK           = 2
 } state_t;
 
 // Parameters
@@ -33,8 +32,8 @@ typedef enum logic [3:0] {
 input clk, rst, ce;
 
 input      gpu_op_t op;
-input               op_valid;
-output reg          op_ready;
+output reg          op_rd_en;
+input               op_empty;
 
 output reg        wr_en;
 output reg [20:0] wr_addr;
@@ -45,8 +44,6 @@ output status_led;
 // Wires/regs
 
 state_t state;
-
-gpu_op_t cur_op;
 
 reg [10:0] prev_rel_x, prev_rel_y;
 reg [10:0] cur_rel_x, cur_rel_y;
@@ -73,14 +70,13 @@ asset_mem #(
 // Processes
 
 initial begin
-    state          <= WAIT_OP_1;
-    cur_op         <= '0;
+    state          <= WAIT_OP;
     cur_rel_x      <= '0;
     cur_rel_y      <= '0;
     prev_rel_x     <= '0;
     prev_rel_y     <= '0;
     asset_mem_addr <= '0;
-    op_ready       <= '0;
+    op_rd_en       <= '0;
     wr_en          <= '0;
     wr_addr        <= '0;
     wr_data        <= '0;
@@ -89,10 +85,10 @@ end
 always_comb begin
     xy_iter_done = 1'b0;
 
-    if (cur_rel_x == cur_op.width - 1) begin
+    if (cur_rel_x == op.width - 1) begin
         next_rel_x = '0;
 
-        if (cur_rel_y == cur_op.height - 1) begin
+        if (cur_rel_y == op.height - 1) begin
             next_rel_y   = '0;
             xy_iter_done = 1'b1;
         end else begin
@@ -106,46 +102,36 @@ end
 
 always_ff @(posedge clk) begin
     if (rst) begin
-        state          <= WAIT_OP_1;
-        cur_op         <= '0;
+        state          <= WAIT_OP;
         cur_rel_x      <= '0;
         cur_rel_y      <= '0;
         prev_rel_x     <= '0;
         prev_rel_y     <= '0;
         asset_mem_addr <= '0;
-        op_ready       <= '0;
+        op_rd_en       <= '0;
         wr_en          <= '0;
         wr_addr        <= '0;
         wr_data        <= '0;
     end else if (ce) begin
-        wr_addr        <= (prev_rel_y + cur_op.y) * HOR_ACTIVE_PIXELS + prev_rel_x + cur_op.x;
-        asset_mem_addr <= cur_op.mem_addr + (cur_rel_y >> cur_op.scale) * (cur_op.width >> cur_op.scale) + (cur_rel_x >> cur_op.scale);
-        wr_data        <= cur_op.mem_en ? asset_mem_out : cur_op.color;
+        wr_addr        <= (prev_rel_y + op.y) * HOR_ACTIVE_PIXELS + prev_rel_x + op.x;
+        asset_mem_addr <= op.mem_addr + (cur_rel_y >> op.scale) * (op.width >> op.scale) + (cur_rel_x >> op.scale);
+        wr_data        <= op.mem_en ? asset_mem_out : op.color;
 
         unique case (state)
-            WAIT_OP_1: begin
-                wr_en    <= '0;
-                op_ready <= 1'b1;
+            WAIT_OP: begin
+                wr_en <= '0;
 
-                if (op_valid) begin
-                    cur_op <= op;
-                    state  <= WAIT_ASSET_MEM;
-                end else begin
-                    state <= WAIT_OP_2;
-                end
-            end
-            WAIT_OP_2: begin
-                if (op_valid) begin
-                    cur_op   <= op;
-                    op_ready <= '0;
-                    state    <= WAIT_ASSET_MEM;
+                if (!op_empty) begin
+                    op_rd_en <= 1'b1;
+
+                    state <= WAIT_ASSET_MEM;
                 end
             end
             WAIT_ASSET_MEM: begin
-                op_ready <= '0;
+                op_rd_en <= '0;
 
-                if (cur_op.width == '0 || cur_op.height == '0) begin
-                    state <= WAIT_OP_1;
+                if (op.width == '0 || op.height == '0) begin
+                    state <= WAIT_OP;
                 end else begin
                     state <= WORK;
                 end
@@ -159,7 +145,7 @@ always_ff @(posedge clk) begin
                 cur_rel_y <= next_rel_y;
 
                 if (xy_iter_done) begin
-                    state <= WAIT_OP_1;
+                    state <= WAIT_OP;
                 end
             end
         endcase

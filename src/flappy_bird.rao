@@ -2,78 +2,8 @@
 <GAO_CONFIG>
     <Version>3.0</Version>
     <Mode>Standard</Mode>
-    <AoCore index="0" sample_clock="clk_renderer" trig_type="0" storage_depth="512" window_num="1" capture_amount="512" implementation="0" trigger_pos="256" module_name="top" force_trigger_by_falling_edge="false" capture_init_data_enabled="false">
+    <AoCore index="0" sample_clock="clk_renderer" trig_type="0" storage_depth="512" window_num="1" capture_amount="512" implementation="0" trigger_pos="64" module_name="top" force_trigger_by_falling_edge="false" capture_init_data_enabled="false">
         <SignalList>
-            <Bus capture_enable="true" name="frame_renderer_inst/gpu_inst/cur_op.x[10:0]">
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.x[10]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.x[9]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.x[8]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.x[7]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.x[6]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.x[5]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.x[4]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.x[3]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.x[2]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.x[1]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.x[0]</Signal>
-            </Bus>
-            <Bus capture_enable="true" name="frame_renderer_inst/gpu_inst/cur_op.y[10:0]">
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.y[10]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.y[9]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.y[8]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.y[7]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.y[6]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.y[5]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.y[4]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.y[3]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.y[2]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.y[1]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.y[0]</Signal>
-            </Bus>
-            <Bus capture_enable="true" name="frame_renderer_inst/gpu_inst/cur_op.width[10:0]">
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.width[10]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.width[9]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.width[8]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.width[7]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.width[6]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.width[5]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.width[4]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.width[3]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.width[2]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.width[1]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.width[0]</Signal>
-            </Bus>
-            <Bus capture_enable="true" name="frame_renderer_inst/gpu_inst/cur_op.height[10:0]">
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.height[10]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.height[9]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.height[8]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.height[7]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.height[6]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.height[5]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.height[4]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.height[3]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.height[2]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.height[1]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.height[0]</Signal>
-            </Bus>
-            <Bus capture_enable="true" name="frame_renderer_inst/gpu_inst/cur_op.mem_addr[10:0]">
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.mem_addr[10]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.mem_addr[9]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.mem_addr[8]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.mem_addr[7]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.mem_addr[6]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.mem_addr[5]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.mem_addr[4]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.mem_addr[3]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.mem_addr[2]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.mem_addr[1]</Signal>
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.mem_addr[0]</Signal>
-            </Bus>
-            <Bus capture_enable="true" name="frame_renderer_inst/gpu_inst/cur_op.scale[0:0]">
-                <Signal>frame_renderer_inst/gpu_inst/cur_op.scale[0]</Signal>
-            </Bus>
-            <Signal capture_enable="true">frame_renderer_inst/gpu_inst/cur_op.color</Signal>
-            <Signal capture_enable="true">frame_renderer_inst/gpu_inst/cur_op.mem_en</Signal>
             <Bus capture_enable="true" name="frame_renderer_inst/cpu_inst/pipes_list_count[4:0]">
                 <Signal>frame_renderer_inst/cpu_inst/pipes_list_count[4]</Signal>
                 <Signal>frame_renderer_inst/cpu_inst/pipes_list_count[3]</Signal>
@@ -120,17 +50,125 @@
             <Signal capture_enable="true">frame_renderer_inst/cpu_inst/pipes_list_iter_start</Signal>
             <Signal capture_enable="true">frame_renderer_inst/cpu_inst/pipes_list_iter_done</Signal>
             <Signal capture_enable="true">frame_renderer_inst/cpu_inst/pipes_list_iter_remove</Signal>
+            <Signal capture_enable="true">swap</Signal>
+            <Bus capture_enable="true" name="frame_renderer_inst/gpu_op_fifo/count[4:0]">
+                <Signal>frame_renderer_inst/gpu_op_fifo/count[4]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/count[3]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/count[2]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/count[1]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/count[0]</Signal>
+            </Bus>
+            <Signal capture_enable="true">frame_renderer_inst/gpu_op_fifo/wr_en</Signal>
+            <Signal capture_enable="true">frame_renderer_inst/gpu_op_fifo/rd_en</Signal>
+            <Bus capture_enable="true" name="frame_renderer_inst/gpu_inst/state[31:0]">
+                <Signal>frame_renderer_inst/gpu_inst/state[31]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/state[30]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/state[29]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/state[28]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/state[27]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/state[26]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/state[25]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/state[24]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/state[23]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/state[22]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/state[21]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/state[20]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/state[19]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/state[18]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/state[17]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/state[16]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/state[15]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/state[14]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/state[13]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/state[12]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/state[11]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/state[10]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/state[9]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/state[8]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/state[7]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/state[6]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/state[5]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/state[4]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/state[3]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/state[2]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/state[1]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/state[0]</Signal>
+            </Bus>
+            <Bus capture_enable="true" name="frame_renderer_inst/gpu_inst/op.x[10:0]">
+                <Signal>frame_renderer_inst/gpu_inst/op.x[10]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.x[9]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.x[8]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.x[7]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.x[6]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.x[5]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.x[4]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.x[3]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.x[2]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.x[1]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.x[0]</Signal>
+            </Bus>
+            <Bus capture_enable="true" name="frame_renderer_inst/gpu_inst/op.y[10:0]">
+                <Signal>frame_renderer_inst/gpu_inst/op.y[10]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.y[9]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.y[8]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.y[7]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.y[6]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.y[5]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.y[4]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.y[3]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.y[2]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.y[1]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.y[0]</Signal>
+            </Bus>
+            <Bus capture_enable="true" name="frame_renderer_inst/gpu_inst/op.width[10:0]">
+                <Signal>frame_renderer_inst/gpu_inst/op.width[10]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.width[9]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.width[8]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.width[7]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.width[6]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.width[5]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.width[4]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.width[3]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.width[2]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.width[1]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.width[0]</Signal>
+            </Bus>
+            <Bus capture_enable="true" name="frame_renderer_inst/gpu_inst/op.height[10:0]">
+                <Signal>frame_renderer_inst/gpu_inst/op.height[10]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.height[9]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.height[8]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.height[7]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.height[6]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.height[5]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.height[4]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.height[3]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.height[2]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.height[1]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.height[0]</Signal>
+            </Bus>
+            <Bus capture_enable="true" name="frame_renderer_inst/gpu_inst/op.mem_addr[10:0]">
+                <Signal>frame_renderer_inst/gpu_inst/op.mem_addr[10]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.mem_addr[9]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.mem_addr[8]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.mem_addr[7]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.mem_addr[6]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.mem_addr[5]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.mem_addr[4]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.mem_addr[3]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.mem_addr[2]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.mem_addr[1]</Signal>
+                <Signal>frame_renderer_inst/gpu_inst/op.mem_addr[0]</Signal>
+            </Bus>
+            <Bus capture_enable="true" name="frame_renderer_inst/gpu_inst/op.scale[0:0]">
+                <Signal>frame_renderer_inst/gpu_inst/op.scale[0]</Signal>
+            </Bus>
+            <Signal capture_enable="true">frame_renderer_inst/cpu_inst/op.color</Signal>
+            <Signal capture_enable="true">frame_renderer_inst/cpu_inst/op.mem_en</Signal>
         </SignalList>
         <Triggers>
             <Trigger index="0">
                 <SignalList>
-                    <Bus restorename="frame_renderer_inst/cpu_inst/pipes_list_count[4:0]">
-                        <Signal>frame_renderer_inst/cpu_inst/pipes_list_count[4]</Signal>
-                        <Signal>frame_renderer_inst/cpu_inst/pipes_list_count[3]</Signal>
-                        <Signal>frame_renderer_inst/cpu_inst/pipes_list_count[2]</Signal>
-                        <Signal>frame_renderer_inst/cpu_inst/pipes_list_count[1]</Signal>
-                        <Signal>frame_renderer_inst/cpu_inst/pipes_list_count[0]</Signal>
-                    </Bus>
+                    <Signal>swap</Signal>
                 </SignalList>
             </Trigger>
             <Trigger index="1"/>
@@ -150,7 +188,7 @@
             <Trigger index="15"/>
         </Triggers>
         <MatchUnits>
-            <MatchUnit index="0" enabled="1" match_type="1" counter_enable="0" counter_width="2" counter="2" countinuous="0" func="1" value0="NNNNN" value1="00000" trigger="0"/>
+            <MatchUnit index="0" enabled="1" match_type="1" counter_enable="0" counter_width="2" counter="2" countinuous="0" func="0" value0="R" value1="0" trigger="0"/>
             <MatchUnit index="1" enabled="0" match_type="0" counter_enable="0" counter_width="2" counter="2" countinuous="0" func="0" value0="" value1=""/>
             <MatchUnit index="2" enabled="0" match_type="0" counter_enable="0" counter_width="2" counter="2" countinuous="0" func="0" value0="" value1=""/>
             <MatchUnit index="3" enabled="0" match_type="0" counter_enable="0" counter_width="2" counter="2" countinuous="0" func="0" value0="" value1=""/>
@@ -171,5 +209,5 @@
             <Expression>M0</Expression>
         </Expressions>
     </AoCore>
-    <GAO_ID>1111110001011000</GAO_ID>
+    <GAO_ID>0110100001100101</GAO_ID>
 </GAO_CONFIG>

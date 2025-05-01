@@ -14,8 +14,8 @@ module cpu #(
     swap,
 
     op,
-    op_valid,
-    op_ready,
+    op_wr_en,
+    op_full,
 
     lose,
     status_wait_gpu
@@ -35,8 +35,8 @@ typedef enum {
     DRAW_PIPES_LOOP_TOP        = 10,
     DRAW_PIPES_LOOP_BOT        = 11,
     DRAW_SCORE                 = 12,
-    WAIT_OP_READY_1            = 13,
-    WAIT_OP_READY_2            = 14,
+    WAIT_GPU_1                 = 13,
+    WAIT_GPU_2                 = 14,
     WAIT_SWAP                  = 15
 } state_t;
 
@@ -65,8 +65,8 @@ input btn;
 input swap;
 
 output     gpu_op_t op;
-output reg          op_valid;
-input               op_ready;
+output reg          op_wr_en;
+input               op_full;
 
 output reg lose;
 
@@ -75,7 +75,7 @@ output reg status_wait_gpu;
 // Wires/regs
 
 state_t state;
-state_t wait_op_ready_next_state;
+state_t wait_gpu_next_state;
 
 reg [10:0] bird_y;
 
@@ -129,9 +129,9 @@ task automatic wait_gpu (
     input state_t next_state
 );
     begin
-        state                    <= WAIT_OP_READY_1;
-        wait_op_ready_next_state <= next_state;
-        status_wait_gpu          <= 1'b1;
+        state               <= WAIT_GPU_1;
+        wait_gpu_next_state <= next_state;
+        status_wait_gpu     <= 1'b1;
     end
 endtask
 
@@ -148,40 +148,39 @@ function signed [11:0] max (
 endfunction
 
 initial begin
-    state                    <= WAIT_OP_READY_2;
-    wait_op_ready_next_state <= DRAW_BACKGROUND;
-    bird_y                   <= VER_ACTIVE_PIXELS / 2 - BIRD_HEIGHT / 2;
-    pipes_list_ce            <= 1'b1;
-    pipes_list_insert_en     <= '0;
-    pipes_list_insert_data   <= '0;
-    pipes_list_iter_start    <= '0;
-    pipes_list_iter_in       <= '0;
-    pipes_list_iter_remove   <= '0;
-    op                       <= '0;
-    op_valid                 <= '0;
-    lose                     <= '0;
-    status_wait_gpu          <= '0;
+    state                  <= DRAW_BACKGROUND;
+    wait_gpu_next_state    <= DRAW_BACKGROUND;
+    bird_y                 <= VER_ACTIVE_PIXELS / 2 - BIRD_HEIGHT / 2;
+    pipes_list_ce          <= 1'b1;
+    pipes_list_insert_en   <= '0;
+    pipes_list_insert_data <= '0;
+    pipes_list_iter_start  <= '0;
+    pipes_list_iter_in     <= '0;
+    pipes_list_iter_remove <= '0;
+    op                     <= '0;
+    op_wr_en               <= '0;
+    lose                   <= '0;
+    status_wait_gpu        <= '0;
 end
 
 always_ff @(posedge clk) begin
     if (rst) begin
-        state                    <= WAIT_OP_READY_2;
-        wait_op_ready_next_state <= DRAW_BACKGROUND;
-        bird_y                   <= VER_ACTIVE_PIXELS / 2 - BIRD_HEIGHT / 2;
-        pipes_list_ce            <= 1'b1;
-        pipes_list_insert_en     <= '0;
-        pipes_list_insert_data   <= '0;
-        pipes_list_iter_start    <= '0;
-        pipes_list_iter_in       <= '0;
-        pipes_list_iter_remove   <= '0;
-        op                       <= '0;
-        op_valid                 <= '0;
-        lose                     <= '0;
-        status_wait_gpu          <= '0;
+        state                  <= DRAW_BACKGROUND;
+        wait_gpu_next_state    <= DRAW_BACKGROUND;
+        bird_y                 <= VER_ACTIVE_PIXELS / 2 - BIRD_HEIGHT / 2;
+        pipes_list_ce          <= 1'b1;
+        pipes_list_insert_en   <= '0;
+        pipes_list_insert_data <= '0;
+        pipes_list_iter_start  <= '0;
+        pipes_list_iter_in     <= '0;
+        pipes_list_iter_remove <= '0;
+        op                     <= '0;
+        op_wr_en               <= '0;
+        lose                   <= '0;
+        status_wait_gpu        <= '0;
     end else if (ce) begin
         unique case (state)
             DRAW_BACKGROUND: begin
-                op_valid <= 1'b1;
                 op       <= '{
                     x:        '0,
                     y:        '0,
@@ -258,8 +257,7 @@ always_ff @(posedge clk) begin
                 state <= DRAW_BIRD;
             end
             DRAW_BIRD: begin
-                op_valid <= 1'b1;
-                op       <= '{
+                op <= '{
                     x:        BIRD_HOR_OFFSET,
                     y:        bird_y,
                     width:    BIRD_WIDTH,
@@ -295,8 +293,7 @@ always_ff @(posedge clk) begin
                     pipes_list_iter_remove <= 0;
                     pipes_list_ce          <= 0;
 
-                    op_valid <= 1'b1;
-                    op       <= '{
+                    op <= '{
                         x:        start_x,
                         y:        0,
                         width:    end_x - start_x,
@@ -316,8 +313,7 @@ always_ff @(posedge clk) begin
 
                 pipes_list_ce <= 1;
 
-                op_valid <= 1'b1;
-                op       <= '{
+                op <= '{
                     x:        start_x,
                     y:        pipes_list_iter_out.y + PIPE_VER_GAP,
                     width:    end_x - start_x,
@@ -337,16 +333,18 @@ always_ff @(posedge clk) begin
             DRAW_SCORE: begin
                 state <= WAIT_SWAP;
             end
-            WAIT_OP_READY_1: begin
-                op_valid <= '0;
+            WAIT_GPU_1: begin
+                if (!op_full) begin
+                    op_wr_en <= 1'b1;
 
-                state <= WAIT_OP_READY_2;
-            end
-            WAIT_OP_READY_2: begin
-                if (op_ready) begin
-                    status_wait_gpu <= '0;
-                    state           <= wait_op_ready_next_state;
+                    state <= WAIT_GPU_2;
                 end
+            end
+            WAIT_GPU_2: begin
+                op_wr_en        <= '0;
+                status_wait_gpu <= '0;
+
+                state <= wait_gpu_next_state;
             end
             WAIT_SWAP: begin
                 if (swap) begin
