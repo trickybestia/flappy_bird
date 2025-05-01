@@ -123,7 +123,7 @@ initial begin
         end
     end
 
-    repeat (1) begin
+    repeat (4) begin
         iter_start = 1;
         #10 iter_start = 0;
 
