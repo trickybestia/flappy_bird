@@ -83,23 +83,22 @@ wire                        frame_renderer_wr_data;
 wire [X_WIDTH-1:0] x;
 wire [Y_WIDTH-1:0] y;
 
-wire rgb_pll_lock;
 wire tmds_pll_lock;
-wire all_pll_lock = rgb_pll_lock & tmds_pll_lock;
+wire all_pll_lock = tmds_pll_lock;
 
 // Assignments
 
 assign leds_n  = ~leds;
 assign leds[0] = buttons[0]; // rst
-assign leds[1] = rgb_pll_lock;
-assign leds[2] = tmds_pll_lock;
+assign leds[1] = tmds_pll_lock;
 
 // Modules
 
-rgb_clock_pll rgb_clock_pll_inst (
-    .clkout(clk_rgb),    //output clkout
-    .lock(rgb_pll_lock), //output lock
-    .clkin(clk_tmds)     //input clkin
+rgb_clock_clkdiv rgb_clock_clkdiv_inst (
+    .clkout(clk_rgb),  //output clkout
+    .hclkin(clk_tmds), //input hclkin
+    .resetn(1'b1),     //input resetn
+    .calib(1'b1)       //input calib
 );
 
 tmds_clock_pll tmds_clock_pll_inst (

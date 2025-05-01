@@ -5,7 +5,7 @@
 //Part Number: GW2A-LV18PG256C8/I7
 //Device: GW2A-18
 //Device Version: C
-//Created Time: Wed Mar 19 18:53:43 2025
+//Created Time: Thu May  1 12:38:36 2025
 
 module tmds_clock_pll (clkout, lock, clkoutd, clkin);
 
@@ -42,9 +42,9 @@ defparam rpll_inst.FCLKIN = "27";
 defparam rpll_inst.DYN_IDIV_SEL = "false";
 defparam rpll_inst.IDIV_SEL = 2;
 defparam rpll_inst.DYN_FBDIV_SEL = "false";
-defparam rpll_inst.FBDIV_SEL = 27;
+defparam rpll_inst.FBDIV_SEL = 13;
 defparam rpll_inst.DYN_ODIV_SEL = "false";
-defparam rpll_inst.ODIV_SEL = 2;
+defparam rpll_inst.ODIV_SEL = 4;
 defparam rpll_inst.PSDA_SEL = "0000";
 defparam rpll_inst.DYN_DA_EN = "true";
 defparam rpll_inst.DUTYDA_SEL = "1000";
@@ -55,7 +55,7 @@ defparam rpll_inst.CLKOUTP_DLY_STEP = 0;
 defparam rpll_inst.CLKFB_SEL = "internal";
 defparam rpll_inst.CLKOUT_BYPASS = "false";
 defparam rpll_inst.CLKOUTP_BYPASS = "false";
-defparam rpll_inst.CLKOUTD_BYPASS = "false";
+defparam rpll_inst.CLKOUTD_BYPASS = "true";
 defparam rpll_inst.DYN_SDIV_SEL = 2;
 defparam rpll_inst.CLKOUTD_SRC = "CLKOUT";
 defparam rpll_inst.CLKOUTD3_SRC = "CLKOUT";

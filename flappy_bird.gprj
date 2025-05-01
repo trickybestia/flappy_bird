@@ -22,7 +22,7 @@
         <File path="src/pipe_t.sv" type="file.verilog" enable="1"/>
         <File path="src/pipes_list.sv" type="file.verilog" enable="1"/>
         <File path="src/pixel_iterator.sv" type="file.verilog" enable="1"/>
-        <File path="src/rgb_clock_pll/rgb_clock_pll.v" type="file.verilog" enable="1"/>
+        <File path="src/rgb_clock_clkdiv/rgb_clock_clkdiv.v" type="file.verilog" enable="1"/>
         <File path="src/synchronizer.sv" type="file.verilog" enable="1"/>
         <File path="src/tmds_clock_pll/tmds_clock_pll.v" type="file.verilog" enable="1"/>
         <File path="src/top.sv" type="file.verilog" enable="1"/>

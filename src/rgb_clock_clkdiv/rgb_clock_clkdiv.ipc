@@ -1,0 +1,12 @@
+[General]
+ipc_version=4
+file=rgb_clock_clkdiv
+module=rgb_clock_clkdiv
+target_device=gw2a18c-011
+type=clock_clkdiv
+version=1.0
+
+[Config]
+Calibration=true
+Division_Factor=5
+Language=0
