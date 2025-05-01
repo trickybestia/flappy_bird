@@ -51,6 +51,8 @@ wire fifo_empty, fifo_full;
 
 // Assignments
 
+assign leds[3] = 0;
+
 // Modules
 
 cpu #(
