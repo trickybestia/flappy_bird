@@ -135,16 +135,22 @@ task automatic wait_gpu (
     end
 endtask
 
-function signed [11:0] min (
-    signed [11:0] a, b
-);
-    min = a < b ? a : b;
+function signed [11:0] min;
+    input signed [11:0] a;
+    input signed [11:0] b;
+
+    begin
+        min = a < b ? a : b;
+    end
 endfunction
 
-function signed [11:0] max (
-    signed [11:0] a, b
-);
-    max = a > b ? a : b;
+function signed [11:0] max;
+    input signed [11:0] a;
+    input signed [11:0] b;
+
+    begin
+        max = a > b ? a : b;
+    end
 endfunction
 
 initial begin
@@ -181,16 +187,14 @@ always_ff @(posedge clk) begin
     end else if (ce) begin
         unique case (state)
             DRAW_BACKGROUND: begin
-                op       <= '{
-                    x:        '0,
-                    y:        '0,
-                    width:    HOR_ACTIVE_PIXELS,
-                    height:   VER_ACTIVE_PIXELS,
-                    color:    '0,
-                    mem_en:   '0,
-                    mem_addr: '0,
-                    scale:    '0
-                };
+                op.x        <= '0;
+                op.y        <= '0;
+                op.width    <= HOR_ACTIVE_PIXELS;
+                op.height   <= VER_ACTIVE_PIXELS;
+                op.color    <= '0;
+                op.mem_en   <= '0;
+                op.mem_addr <= '0;
+                op.scale    <= '0;
 
                 wait_gpu(CHECK_LOSE);
             end
@@ -226,10 +230,8 @@ always_ff @(posedge clk) begin
             MOVE_PIPES_LOOP: begin
                 pipes_list_iter_start <= 0;
 
-                pipes_list_iter_in <= '{
-                    x: pipes_list_iter_out.x - 1,
-                    y: pipes_list_iter_out.y
-                };
+                pipes_list_iter_in.x <= pipes_list_iter_out.x - 1;
+                pipes_list_iter_in.y <= pipes_list_iter_out.y;
 
                 if (pipes_list_iter_done) begin
                     if (pipes_list_count == '0 || HOR_ACTIVE_PIXELS - pipes_list_iter_out.x - 1 - PIPE_WIDTH >= PIPE_HOR_GAP) begin
@@ -240,11 +242,10 @@ always_ff @(posedge clk) begin
                 end
             end
             MOVE_PIPES_CREATE_PIPE: begin
-                pipes_list_insert_en   <= 1;
-                pipes_list_insert_data <= '{
-                    x: HOR_ACTIVE_PIXELS - 1,
-                    y: lfsr_rng_out
-                };
+                pipes_list_insert_en <= 1;
+
+                pipes_list_insert_data.x <= HOR_ACTIVE_PIXELS - 1;
+                pipes_list_insert_data.y <= lfsr_rng_out;
 
                 state <= MOVE_PIPES_CREATE_PIPE_END;
             end
@@ -257,16 +258,14 @@ always_ff @(posedge clk) begin
                 state <= DRAW_BIRD;
             end
             DRAW_BIRD: begin
-                op <= '{
-                    x:        BIRD_HOR_OFFSET,
-                    y:        bird_y,
-                    width:    BIRD_WIDTH,
-                    height:   BIRD_HEIGHT,
-                    color:    '0,
-                    mem_en:   1'b1,
-                    mem_addr: '0,
-                    scale:    1'b1
-                };
+                op.x        <= BIRD_HOR_OFFSET;
+                op.y        <= bird_y;
+                op.width    <= BIRD_WIDTH;
+                op.height   <= BIRD_HEIGHT;
+                op.color    <= '0;
+                op.mem_en   <= 1'b1;
+                op.mem_addr <= '0;
+                op.scale    <= 1'b1;
 
                 wait_gpu(DRAW_PIPES_START);
             end
@@ -276,8 +275,10 @@ always_ff @(posedge clk) begin
                 state <= DRAW_PIPES_LOOP_TOP;
             end
             DRAW_PIPES_LOOP_TOP: begin
-                automatic logic signed [11:0] start_x = max(pipes_list_iter_out.x, 0);
-                automatic logic signed [11:0] end_x = min(pipes_list_iter_out.x + PIPE_WIDTH, HOR_ACTIVE_PIXELS);
+                logic signed [11:0] start_x, end_x;
+                
+                start_x = max(pipes_list_iter_out.x, 0);
+                end_x = min(pipes_list_iter_out.x + PIPE_WIDTH, HOR_ACTIVE_PIXELS);
 
                 pipes_list_iter_start <= 0;
                 pipes_list_iter_in    <= pipes_list_iter_out;
@@ -293,36 +294,34 @@ always_ff @(posedge clk) begin
                     pipes_list_iter_remove <= 0;
                     pipes_list_ce          <= 0;
 
-                    op <= '{
-                        x:        start_x,
-                        y:        0,
-                        width:    end_x - start_x,
-                        height:   pipes_list_iter_out.y,
-                        color:    1'b1,
-                        mem_en:   '0,
-                        mem_addr: '0,
-                        scale:    '0
-                    };
+                    op.x        <= start_x;
+                    op.y        <= '0;
+                    op.width    <= end_x - start_x;
+                    op.height   <= pipes_list_iter_out.y;
+                    op.color    <= 1'b1;
+                    op.mem_en   <= '0;
+                    op.mem_addr <= '0;
+                    op.scale    <= '0;
 
                     wait_gpu(DRAW_PIPES_LOOP_BOT);
                 end
             end
             DRAW_PIPES_LOOP_BOT: begin
-                automatic logic signed [11:0] start_x = max(pipes_list_iter_out.x, 0);
-                automatic logic signed [11:0] end_x = min(pipes_list_iter_out.x + PIPE_WIDTH, HOR_ACTIVE_PIXELS);
+                logic signed [11:0] start_x, end_x;
+                
+                start_x = max(pipes_list_iter_out.x, 0);
+                end_x = min(pipes_list_iter_out.x + PIPE_WIDTH, HOR_ACTIVE_PIXELS);
 
                 pipes_list_ce <= 1;
 
-                op <= '{
-                    x:        start_x,
-                    y:        pipes_list_iter_out.y + PIPE_VER_GAP,
-                    width:    end_x - start_x,
-                    height:   VER_ACTIVE_PIXELS - pipes_list_iter_out.y - PIPE_VER_GAP,
-                    color:    1'b1,
-                    mem_en:   '0,
-                    mem_addr: '0,
-                    scale:    '0
-                };
+                op.x        <= start_x;
+                op.y        <= pipes_list_iter_out.y + PIPE_VER_GAP;
+                op.width    <= end_x - start_x;
+                op.height   <= VER_ACTIVE_PIXELS - pipes_list_iter_out.y - PIPE_VER_GAP;
+                op.color    <= 1'b1;
+                op.mem_en   <= '0;
+                op.mem_addr <= '0;
+                op.scale    <= '0;
 
                 if (pipes_list_iter_done) begin
                     wait_gpu(DRAW_SCORE);
