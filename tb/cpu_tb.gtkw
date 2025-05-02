@@ -1,0 +1,46 @@
+[*]
+[*] GTKWave Analyzer v3.3.121 (w)1999-2024 BSI
+[*] Fri May  2 12:14:27 2025
+[*]
+[dumpfile] "/home/trickybestia/projects/gowin/flappy_bird/tb/cpu_tb.vcd"
+[dumpfile_mtime] "Fri May  2 12:03:06 2025"
+[dumpfile_size] 311296
+[savefile] "/home/trickybestia/projects/gowin/flappy_bird/tb/cpu_tb.gtkw"
+[timestart] 82300
+[size] 1920 966
+[pos] -1 -1
+*-14.567668 155000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] cpu_tb.
+[sst_width] 466
+[signals_width] 230
+[sst_expanded] 1
+[sst_vpaned_height] 277
+@28
+cpu_tb.clk
+cpu_tb.rst
+cpu_tb.ce
+cpu_tb.btn
+cpu_tb.swap
+cpu_tb.op_full
+@420
+cpu_tb.uut.state
+@22
+cpu_tb.op[57:0]
+@28
+cpu_tb.op_wr_en
+cpu_tb.status_lose
+cpu_tb.status_wait_gpu
+cpu_tb.status_wait_swap
+@24
+cpu_tb.uut.pipes_list_count[4:0]
+@28
+cpu_tb.uut.pipes_list_iter_start
+cpu_tb.uut.pipes_list_iter_done
+cpu_tb.uut.pipes_list_iter_remove
+@29
+cpu_tb.uut.pipes_list_ce
+@22
+cpu_tb.uut.pipes_list_iter_out[22:0]
+cpu_tb.uut.pipes_list_iter_in[22:0]
+[pattern_trace] 1
+[pattern_trace] 0
