@@ -17,8 +17,9 @@ module cpu #(
     op_wr_en,
     op_full,
 
-    lose,
-    status_wait_gpu
+    status_lose,
+    status_wait_gpu,
+    status_wait_swap
 );
 
 typedef enum {
@@ -34,7 +35,6 @@ typedef enum {
     DRAW_BIRD                  = 9,
     DRAW_PIPES_1               = 10,
     DRAW_PIPES_2               = 11,
-    DRAW_PIPES_LOOP            = 12,
     DRAW_PIPES_LOOP_TOP        = 13,
     DRAW_PIPES_LOOP_BOT        = 14,
     DRAW_SCORE                 = 15,
@@ -71,9 +71,9 @@ output     gpu_op_t op;
 output reg          op_wr_en;
 input               op_full;
 
-output reg lose;
-
+output reg status_lose;
 output reg status_wait_gpu;
+output     status_wait_swap;
 
 // Wires/regs
 
@@ -98,6 +98,8 @@ reg    pipes_list_iter_remove;
 wire [10:0] lfsr_rng_out;
 
 // Assignments
+
+assign status_wait_swap = state == WAIT_SWAP;
 
 // Modules
 
@@ -172,7 +174,7 @@ initial begin
     pipes_list_iter_remove <= '0;
     op                     <= '0;
     op_wr_en               <= '0;
-    lose                   <= '0;
+    status_lose            <= '0;
     status_wait_gpu        <= '0;
 end
 
@@ -189,7 +191,7 @@ always_ff @(posedge clk) begin
         pipes_list_iter_remove <= '0;
         op                     <= '0;
         op_wr_en               <= '0;
-        lose                   <= '0;
+        status_lose            <= '0;
         status_wait_gpu        <= '0;
     end else if (ce) begin
         unique case (state)
@@ -206,7 +208,7 @@ always_ff @(posedge clk) begin
                 wait_gpu(CHECK_LOSE);
             end
             CHECK_LOSE: begin
-                if (lose) begin
+                if (status_lose) begin
                     state <= DRAW_BIRD;
                 end else begin
                     state <= MOVE_BIRD;
@@ -215,13 +217,13 @@ always_ff @(posedge clk) begin
             MOVE_BIRD: begin
                 if (btn) begin
                     if (bird_y <= 2) begin
-                        lose <= 1'b1;
+                        status_lose <= 1'b1;
                     end else begin
                         bird_y <= bird_y - 3;
                     end
                 end else begin
                     if ((VER_ACTIVE_PIXELS - bird_y - BIRD_HEIGHT) <= 2) begin
-                        lose <= 1'b1;
+                        status_lose <= 1'b1;
                     end else begin
                         bird_y <= bird_y + 3;
                     end
@@ -287,11 +289,7 @@ always_ff @(posedge clk) begin
             end
             DRAW_PIPES_2: begin
                 pipes_list_iter_start <= 0;
-
-                state <= DRAW_PIPES_LOOP;
-            end
-            DRAW_PIPES_LOOP: begin
-                pipes_list_ce <= 0;
+                pipes_list_ce         <= 0;
 
                 state <= DRAW_PIPES_LOOP_TOP;
             end
@@ -305,6 +303,7 @@ always_ff @(posedge clk) begin
 
                 if (pipes_list_iter_remove && pipes_list_iter_done) begin
                     pipes_list_iter_remove <= 0;
+                    pipes_list_ce          <= 1;
 
                     state <= DRAW_SCORE;
                 end else if (end_x <= 0) begin
@@ -345,7 +344,7 @@ always_ff @(posedge clk) begin
                 if (pipes_list_iter_done) begin
                     wait_gpu(DRAW_SCORE);
                 end else begin
-                    wait_gpu(DRAW_PIPES_LOOP);
+                    wait_gpu(DRAW_PIPES_2);
                 end
             end
             DRAW_SCORE: begin

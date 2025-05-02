@@ -51,8 +51,6 @@ wire fifo_empty, fifo_full;
 
 // Assignments
 
-assign leds[3] = 0;
-
 // Modules
 
 cpu #(
@@ -67,8 +65,9 @@ cpu #(
     .op(fifo_wr_data),
     .op_wr_en(fifo_wr_en),
     .op_full(fifo_full),
-    .lose(leds[0]),
-    .status_wait_gpu(leds[2])
+    .status_lose(leds[0]),
+    .status_wait_gpu(leds[2]),
+    .status_wait_swap(leds[3])
 );
 
 fifo #(
