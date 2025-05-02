@@ -20,9 +20,9 @@ reg    insert_en;
 pipe_t insert_data;
 
 reg    iter_start;
-wire   iter_done;
 pipe_t iter_in;
 pipe_t iter_out;
+wire   iter_out_valid;
 reg    iter_remove;
 
 // Assignments
@@ -37,9 +37,9 @@ pipes_list uut (
     .insert_en,
     .insert_data,
     .iter_start,
-    .iter_done,
     .iter_in,
     .iter_out,
+    .iter_out_valid,
     .iter_remove
 );
 
@@ -80,7 +80,7 @@ initial begin
         iter_start = 1;
         #10 iter_start = 0;
 
-        while (!iter_done) begin
+        while (iter_out_valid) begin
             iter_in = iter_out;
 
             #10;
@@ -91,7 +91,7 @@ initial begin
         iter_start = 1;
         #10 iter_start = 0;
 
-        while (!iter_done) begin
+        while (iter_out_valid) begin
             iter_in = iter_out + 1;
 
             #10;
@@ -102,7 +102,7 @@ initial begin
         iter_start = 1;
         #10 iter_start = 0;
 
-        while (!iter_done) begin
+        while (iter_out_valid) begin
             iter_in = iter_out;
 
             #10;
@@ -116,7 +116,7 @@ initial begin
         iter_remove = 1;
         #10 iter_remove = 0;
 
-        while (!iter_done) begin
+        while (iter_out_valid) begin
             iter_in = iter_out;
 
             #10;
@@ -127,7 +127,7 @@ initial begin
         iter_start = 1;
         #10 iter_start = 0;
 
-        while (!iter_done) begin
+        while (iter_out_valid) begin
             iter_in = iter_out;
 
             #10;
@@ -142,7 +142,7 @@ initial begin
     iter_start = 1;
     #10 iter_start = 0;
 
-    while (!iter_done) begin
+    while (iter_out_valid) begin
         iter_in = iter_out;
 
         #10;

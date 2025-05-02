@@ -11,9 +11,9 @@ module pipes_list (
     insert_data,
 
     iter_start,
-    iter_done,
     iter_in,
     iter_out,
+    iter_out_valid,
     iter_remove
 );
 
@@ -29,21 +29,21 @@ input        insert_en;
 input pipe_t insert_data;
 
 input         iter_start;
-output reg    iter_done;
 input  pipe_t iter_in;
 output pipe_t iter_out;
+output reg    iter_out_valid;
 input         iter_remove;
 
 // Wires/regs
 
 wire [4:0] fifo_count;
 
-reg       iter_done_next;
+reg       iter_out_valid_next;
 reg [4:0] iter_index, iter_index_next;
 
 // Assignments
 
-assign count = iter_done ? fifo_count : fifo_count + 1;
+assign count = iter_out_valid ? fifo_count + 1 : fifo_count;
 
 // Modules
 
@@ -54,9 +54,9 @@ fifo #(
     .clk,
     .rst,
     .ce,
-    .wr_en   (insert_en || (!iter_done && !iter_remove)),
+    .wr_en   (insert_en || (iter_out_valid && !iter_remove)),
     .wr_data (insert_en ? insert_data : iter_in),
-    .rd_en   (!iter_done_next),
+    .rd_en   (iter_out_valid_next),
     .rd_data (iter_out),
     .empty   (),
     .full    (),
@@ -66,14 +66,14 @@ fifo #(
 // Processes
 
 initial begin
-    iter_done  <= 1;
-    iter_index <= 0;
+    iter_out_valid <= 0;
+    iter_index     <= 0;
 end
 
 always_comb begin
     if (iter_start) begin
         iter_index_next = 0;
-    end else if (!iter_done) begin
+    end else if (iter_out_valid) begin
         if (iter_index == count - 1) begin
             iter_index_next = 0;
         end else if (!iter_remove) begin
@@ -97,19 +97,19 @@ end
 
 always_comb begin
     if (iter_start) begin
-        iter_done_next = fifo_count == 0;
-    end else if (!iter_done) begin
-        iter_done_next = iter_index == count - 1;
+        iter_out_valid_next = fifo_count != 0;
+    end else if (iter_out_valid) begin
+        iter_out_valid_next = iter_index != count - 1;
     end else begin
-        iter_done_next = iter_done;
+        iter_out_valid_next = iter_out_valid;
     end
 end
 
 always_ff @(posedge clk) begin
     if (rst) begin
-        iter_done <= 1;
+        iter_out_valid <= 0;
     end else if (ce) begin
-        iter_done <= iter_done_next;
+        iter_out_valid <= iter_out_valid_next;
     end
 end
 

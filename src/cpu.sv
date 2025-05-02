@@ -35,12 +35,12 @@ typedef enum {
     DRAW_BIRD                  = 9,
     DRAW_PIPES_1               = 10,
     DRAW_PIPES_2               = 11,
-    DRAW_PIPES_LOOP_TOP        = 13,
-    DRAW_PIPES_LOOP_BOT        = 14,
-    DRAW_SCORE                 = 15,
-    WAIT_GPU_1                 = 16,
-    WAIT_GPU_2                 = 17,
-    WAIT_SWAP                  = 18
+    DRAW_PIPES_LOOP_TOP        = 12,
+    DRAW_PIPES_LOOP_BOT        = 13,
+    DRAW_SCORE                 = 14,
+    WAIT_GPU_1                 = 15,
+    WAIT_GPU_2                 = 16,
+    WAIT_SWAP                  = 17
 } state_t;
 
 // Parameters
@@ -90,9 +90,9 @@ reg    pipes_list_insert_en;
 pipe_t pipes_list_insert_data;
 
 reg    pipes_list_iter_start;
-wire   pipes_list_iter_done;
 pipe_t pipes_list_iter_in;
 pipe_t pipes_list_iter_out;
+wire   pipes_list_iter_out_valid;
 reg    pipes_list_iter_remove;
 
 wire [10:0] lfsr_rng_out;
@@ -106,15 +106,15 @@ assign status_wait_swap = state == WAIT_SWAP;
 pipes_list pipes_list_inst (
     .clk,
     .rst,
-    .ce          (ce && pipes_list_ce),
-    .count       (pipes_list_count),
-    .insert_en   (pipes_list_insert_en),
-    .insert_data (pipes_list_insert_data),
-    .iter_start  (pipes_list_iter_start),
-    .iter_done   (pipes_list_iter_done),
-    .iter_in     (pipes_list_iter_in),
-    .iter_out    (pipes_list_iter_out),
-    .iter_remove (pipes_list_iter_remove)
+    .ce             (ce && pipes_list_ce),
+    .count          (pipes_list_count),
+    .insert_en      (pipes_list_insert_en),
+    .insert_data    (pipes_list_insert_data),
+    .iter_start     (pipes_list_iter_start),
+    .iter_in        (pipes_list_iter_in),
+    .iter_out       (pipes_list_iter_out),
+    .iter_out_valid (pipes_list_iter_out_valid),
+    .iter_remove    (pipes_list_iter_remove)
 );
 
 lfsr_rng #(
@@ -134,10 +134,6 @@ task automatic wait_gpu (
     input state_t next_state
 );
     begin
-        $display("cpu.sv: sent command at $time = %t", $time);
-        $display("x\ty\twidth\theight\tcolor\tmem_en\tmem_addr\tscale");
-        $display("%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", op.x, op.y, op.width, op.height, op.color, op.mem_en, op.mem_addr, op.scale);
-
         state               <= WAIT_GPU_1;
         wait_gpu_next_state <= next_state;
         status_wait_gpu     <= 1'b1;
@@ -242,15 +238,13 @@ always_ff @(posedge clk) begin
                 state <= MOVE_PIPES_LOOP;
             end
             MOVE_PIPES_LOOP: begin
-                pipes_list_iter_in.x <= pipes_list_iter_out.x - 1;
-                pipes_list_iter_in.y <= pipes_list_iter_out.y;
-
-                if (pipes_list_iter_done) begin
-                    if (pipes_list_count == '0) begin// || HOR_ACTIVE_PIXELS - pipes_list_iter_out.x - 1 - PIPE_WIDTH >= PIPE_HOR_GAP) begin
-                        state <= MOVE_PIPES_CREATE_PIPE;
-                    end else begin
-                        state <= CHECK_COLLISION;
-                    end
+                if (pipes_list_iter_out_valid) begin
+                    pipes_list_iter_in.x <= pipes_list_iter_out.x - 1;
+                    pipes_list_iter_in.y <= pipes_list_iter_out.y;
+                end else if (pipes_list_count == '0) begin// || HOR_ACTIVE_PIXELS - pipes_list_iter_out.x - 1 - PIPE_WIDTH >= PIPE_HOR_GAP) begin
+                    state <= MOVE_PIPES_CREATE_PIPE;
+                end else begin
+                    state <= CHECK_COLLISION;
                 end
             end
             MOVE_PIPES_CREATE_PIPE: begin
@@ -299,29 +293,34 @@ always_ff @(posedge clk) begin
                 start_x = max(pipes_list_iter_out.x, 0);
                 end_x = min(pipes_list_iter_out.x + PIPE_WIDTH, HOR_ACTIVE_PIXELS);
 
-                pipes_list_iter_in <= pipes_list_iter_out;
+                pipes_list_ce <= 1;
 
-                if (pipes_list_iter_remove && pipes_list_iter_done) begin
-                    pipes_list_iter_remove <= 0;
-                    pipes_list_ce          <= 1;
+                if (pipes_list_iter_out_valid) begin
+                    pipes_list_iter_in <= pipes_list_iter_out;
 
-                    state <= DRAW_SCORE;
-                end else if (end_x <= 0) begin
-                    pipes_list_iter_remove <= 1;
-                    // increment score
+                    if (end_x <= 0) begin
+                        pipes_list_iter_remove <= 1;
+                        
+                        state <= DRAW_PIPES_2;
+                        // increment score
+                    end else begin
+                        pipes_list_iter_remove <= 0;
+
+                        op.x        <= start_x;
+                        op.y        <= '0;
+                        op.width    <= end_x - start_x;
+                        op.height   <= pipes_list_iter_out.y;
+                        op.color    <= 1'b1;
+                        op.mem_en   <= '0;
+                        op.mem_addr <= '0;
+                        op.scale    <= '0;
+
+                        wait_gpu(DRAW_PIPES_LOOP_BOT);
+                    end
                 end else begin
                     pipes_list_iter_remove <= 0;
 
-                    op.x        <= start_x;
-                    op.y        <= '0;
-                    op.width    <= end_x - start_x;
-                    op.height   <= pipes_list_iter_out.y;
-                    op.color    <= 1'b1;
-                    op.mem_en   <= '0;
-                    op.mem_addr <= '0;
-                    op.scale    <= '0;
-
-                    wait_gpu(DRAW_PIPES_LOOP_BOT);
+                    state <= DRAW_SCORE;
                 end
             end
             DRAW_PIPES_LOOP_BOT: begin
@@ -329,8 +328,6 @@ always_ff @(posedge clk) begin
                 
                 start_x = max(pipes_list_iter_out.x, 0);
                 end_x = min(pipes_list_iter_out.x + PIPE_WIDTH, HOR_ACTIVE_PIXELS);
-
-                pipes_list_ce <= 1;
 
                 op.x        <= start_x;
                 op.y        <= pipes_list_iter_out.y + PIPE_VER_GAP;
@@ -341,10 +338,12 @@ always_ff @(posedge clk) begin
                 op.mem_addr <= '0;
                 op.scale    <= '0;
 
-                if (pipes_list_iter_done) begin
-                    wait_gpu(DRAW_SCORE);
+                if (pipes_list_iter_out_valid) begin
+                    pipes_list_ce <= 0;
+
+                    wait_gpu(DRAW_PIPES_LOOP_TOP);
                 end else begin
-                    wait_gpu(DRAW_PIPES_2);
+                    wait_gpu(DRAW_SCORE);
                 end
             end
             DRAW_SCORE: begin
@@ -355,6 +354,10 @@ always_ff @(posedge clk) begin
             WAIT_GPU_1: begin
                 if (!op_full) begin
                     op_wr_en <= 1'b1;
+
+                    $display("cpu.sv: sent command at $time = %t", $time);
+                    $display("x\ty\twidth\theight\tcolor\tmem_en\tmem_addr\tscale");
+                    $display("%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", op.x, op.y, op.width, op.height, op.color, op.mem_en, op.mem_addr, op.scale);
 
                     state <= WAIT_GPU_2;
                 end
