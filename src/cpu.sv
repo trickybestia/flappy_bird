@@ -116,8 +116,8 @@ pipes_list pipes_list_inst (
 );
 
 lfsr_rng #(
-    .OUT_WIDTH(9),
-    .OUT_MIN(0),
+    .OUT_WIDTH($clog2(VER_ACTIVE_PIXELS)),
+    .OUT_MIN(1),
     .OUT_MAX(VER_ACTIVE_PIXELS - PIPE_VER_GAP)
 ) lfsr_rng_inst (
     .clk,
@@ -350,7 +350,7 @@ always_ff @(posedge clk) begin
             end
             DRAW_SCORE: begin
                 $display("cpu.sv: done, waiting for swap\n");
-                
+
                 state <= WAIT_SWAP;
             end
             WAIT_GPU_1: begin
