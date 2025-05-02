@@ -1,0 +1,30 @@
+[*]
+[*] GTKWave Analyzer v3.3.121 (w)1999-2024 BSI
+[*] Fri May  2 15:23:01 2025
+[*]
+[dumpfile] "/home/trickybestia/projects/gowin/flappy_bird/tb/pipes_list_tb.vcd"
+[dumpfile_mtime] "Fri May  2 15:21:30 2025"
+[dumpfile_size] 10045
+[savefile] "/home/trickybestia/projects/gowin/flappy_bird/tb/pipes_list_tb.gtkw"
+[timestart] 0
+[size] 1920 966
+[pos] -461 -184
+*-16.629541 123100 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[sst_width] 283
+[signals_width] 166
+[sst_expanded] 1
+[sst_vpaned_height] 277
+@25
+pipes_list_tb.clk
+pipes_list_tb.rst
+pipes_list_tb.ce
+pipes_list_tb.count[4:0]
+pipes_list_tb.insert_en
+pipes_list_tb.insert_data[22:0]
+pipes_list_tb.iter_start
+pipes_list_tb.iter_done
+pipes_list_tb.iter_in[22:0]
+pipes_list_tb.iter_out[22:0]
+pipes_list_tb.iter_remove
+[pattern_trace] 1
+[pattern_trace] 0

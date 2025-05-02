@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-`include "pipe_t.sv"
+`include "../src/pipe_t.sv"
 
 module pipes_list_tb;
 
@@ -132,6 +132,20 @@ initial begin
 
             #10;
         end
+    end
+
+    insert_en   = 1;
+    insert_data = 1;
+
+    #10 insert_en = 0;
+
+    iter_start = 1;
+    #10 iter_start = 0;
+
+    while (!iter_done) begin
+        iter_in = iter_out;
+
+        #10;
     end
 
     $finish;
