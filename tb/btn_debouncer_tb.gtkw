@@ -1,0 +1,24 @@
+[*]
+[*] GTKWave Analyzer v3.3.121 (w)1999-2024 BSI
+[*] Sat May  3 20:47:24 2025
+[*]
+[dumpfile] "/home/trickybestia/projects/gowin/flappy_bird/tb/btn_debouncer_tb.vcd"
+[dumpfile_mtime] "Sat May  3 20:47:21 2025"
+[dumpfile_size] 16486
+[savefile] "/home/trickybestia/projects/gowin/flappy_bird/tb/btn_debouncer_tb.gtkw"
+[timestart] 0
+[size] 1920 966
+[pos] -1 -1
+*-17.264744 48000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[sst_width] 283
+[signals_width] 134
+[sst_expanded] 1
+[sst_vpaned_height] 277
+@29
+btn_debouncer_tb.clk
+@28
+btn_debouncer_tb.btn
+btn_debouncer_tb.btn_click
+btn_debouncer_tb.btn_debounced
+[pattern_trace] 1
+[pattern_trace] 0

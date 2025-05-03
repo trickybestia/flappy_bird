@@ -1,0 +1,27 @@
+[*]
+[*] GTKWave Analyzer v3.3.121 (w)1999-2024 BSI
+[*] Sat May  3 20:33:43 2025
+[*]
+[dumpfile] "/home/trickybestia/projects/gowin/flappy_bird/tb/bcd_ripple_carry_adder_tb.vcd"
+[dumpfile_mtime] "Sat May  3 20:32:36 2025"
+[dumpfile_size] 2737933
+[savefile] "/home/trickybestia/projects/gowin/flappy_bird/tb/bcd_ripple_carry_adder_tb.gtkw"
+[timestart] 0
+[size] 1920 966
+[pos] -461 -184
+*-24.657038 21900000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] bcd_ripple_carry_adder_tb.
+[sst_width] 283
+[signals_width] 94
+[sst_expanded] 1
+[sst_vpaned_height] 277
+@22
+bcd_ripple_carry_adder_tb.a[7:0]
+bcd_ripple_carry_adder_tb.b[7:0]
+@28
+bcd_ripple_carry_adder_tb.cin
+bcd_ripple_carry_adder_tb.cout
+@22
+bcd_ripple_carry_adder_tb.sum[7:0]
+[pattern_trace] 1
+[pattern_trace] 0
