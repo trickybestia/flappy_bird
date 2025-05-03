@@ -1,0 +1,34 @@
+[*]
+[*] GTKWave Analyzer v3.3.121 (w)1999-2024 BSI
+[*] Sat May  3 13:16:04 2025
+[*]
+[dumpfile] "/home/trickybestia/projects/gowin/flappy_bird/tb/gpu_tb.vcd"
+[dumpfile_mtime] "Sat May  3 13:15:43 2025"
+[dumpfile_size] 2243
+[savefile] "/home/trickybestia/projects/gowin/flappy_bird/tb/gpu_tb.gtkw"
+[timestart] 0
+[size] 1920 966
+[pos] -1 -1
+*-3.914710 9 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] gpu_tb.
+[sst_width] 283
+[signals_width] 134
+[sst_expanded] 1
+[sst_vpaned_height] 277
+@28
+gpu_tb.clk
+gpu_tb.rst
+gpu_tb.ce
+@22
+gpu_tb.op[58:0]
+@28
+gpu_tb.op_rd_en
+gpu_tb.op_empty
+gpu_tb.wr_en
+@24
+gpu_tb.wr_addr[20:0]
+@28
+gpu_tb.wr_data
+gpu_tb.status_led
+[pattern_trace] 1
+[pattern_trace] 0

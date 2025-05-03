@@ -30,6 +30,13 @@ iverilog -g2005-sv -grelative-include -s fifo_tb -o fifo_tb.out fifo_tb.sv ../sr
 gtkwave fifo_tb.gtkw
 ```
 
+#### gpu_tb.sv
+
+```
+iverilog -g2005-sv -grelative-include -s gpu_tb gpu_tb.sv ../src/{gpu.sv,gpu_op_t.sv,asset_mem.sv} -o gpu_tb.out && ./gpu_tb.out
+gtkwave gpu_tb.gtkw
+```
+
 #### pipes_list_tb.sv
 
 ```

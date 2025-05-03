@@ -29,7 +29,7 @@ typedef enum {
 // Parameters
 
 `ifdef __ICARUS__
-localparam DEBUG_SKIP_COMMANDS_COUNT = 1;
+localparam DEBUG_SKIP_COMMANDS_COUNT = 0;
 `else
 localparam DEBUG_SKIP_COMMANDS_COUNT = 0;
 `endif
@@ -61,6 +61,8 @@ reg        xy_iter_done;
 reg  [9:0] asset_mem_addr;
 wire       asset_mem_out;
 
+reg next_wr_en;
+
 integer commands_counter;
 
 // Assignments
@@ -85,6 +87,7 @@ initial begin
     prev_rel_x       <= '0;
     prev_rel_y       <= '0;
     asset_mem_addr   <= '0;
+    next_wr_en       <= '0;
     commands_counter <= 0;
     op_rd_en         <= 0;
     wr_en            <= 0;
@@ -118,6 +121,7 @@ always_ff @(posedge clk) begin
         prev_rel_x       <= '0;
         prev_rel_y       <= '0;
         asset_mem_addr   <= '0;
+        next_wr_en       <= '0;
         commands_counter <= 0;
         op_rd_en         <= 0;
         wr_en            <= 0;
@@ -127,10 +131,11 @@ always_ff @(posedge clk) begin
         wr_addr        <= (prev_rel_y + op.y) * HOR_ACTIVE_PIXELS + prev_rel_x + op.x;
         asset_mem_addr <= op.mem_addr + (cur_rel_y >> op.scale) * (op.width >> op.scale) + (cur_rel_x >> op.scale);
         wr_data        <= op.mem_en ? asset_mem_out : op.color;
+        wr_en          <= next_wr_en;
 
         unique case (state)
             WAIT_FIFO_NOT_EMPTY: begin
-                wr_en <= 0;
+                next_wr_en <= 0;
 
                 if (!op_empty) begin
                     op_rd_en <= 1;
@@ -167,7 +172,7 @@ always_ff @(posedge clk) begin
                 end
             end
             WORK: begin
-                wr_en <= 1;
+                next_wr_en <= 1;
 
                 prev_rel_x <= cur_rel_x;
                 prev_rel_y <= cur_rel_y;
