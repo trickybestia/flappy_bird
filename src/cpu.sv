@@ -131,7 +131,7 @@ pipes_list pipes_list_inst (
 lfsr_rng #(
     .OUT_WIDTH($clog2(VER_ACTIVE_PIXELS)),
     .OUT_MIN(1),
-    .OUT_MAX(VER_ACTIVE_PIXELS - PIPE_VER_GAP)
+    .OUT_MAX(VER_ACTIVE_PIXELS - PIPE_VER_GAP - 1)
 ) lfsr_rng_inst (
     .clk,
     .rst,

@@ -86,7 +86,7 @@ class Cpu:
             len(self.pipes) == 0
             or HOR_ACTIVE_PIXELS - self.pipes[-1].x - PIPE_WIDTH >= PIPE_HOR_GAP
         ):
-            pipe_y = randint(0, VER_ACTIVE_PIXELS - PIPE_VER_GAP)
+            pipe_y = randint(1, VER_ACTIVE_PIXELS - PIPE_VER_GAP - 1)
 
             self.pipes.append(Pipe(HOR_ACTIVE_PIXELS - 1, pipe_y))
 
