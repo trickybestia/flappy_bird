@@ -48,7 +48,7 @@
             <Signal capture_enable="true">frame_renderer_inst/cpu_inst/pipes_list_ce</Signal>
             <Signal capture_enable="true">frame_renderer_inst/cpu_inst/pipes_list_insert_en</Signal>
             <Signal capture_enable="true">frame_renderer_inst/cpu_inst/pipes_list_iter_start</Signal>
-            <Signal capture_enable="true">frame_renderer_inst/cpu_inst/pipes_list_iter_done</Signal>
+            <Signal capture_enable="true">frame_renderer_inst/cpu_inst/pipes_list_iter_out_valid</Signal>
             <Signal capture_enable="true">frame_renderer_inst/cpu_inst/pipes_list_iter_remove</Signal>
             <Signal capture_enable="true">swap</Signal>
             <Bus capture_enable="true" name="frame_renderer_inst/gpu_op_fifo/count[4:0]">
@@ -162,8 +162,68 @@
             <Bus capture_enable="true" name="frame_renderer_inst/gpu_inst/op.scale[0:0]">
                 <Signal>frame_renderer_inst/gpu_inst/op.scale[0]</Signal>
             </Bus>
-            <Signal capture_enable="true">frame_renderer_inst/cpu_inst/op.color</Signal>
-            <Signal capture_enable="true">frame_renderer_inst/cpu_inst/op.mem_en</Signal>
+            <Signal capture_enable="true">frame_renderer_inst/gpu_inst/op.mem_en</Signal>
+            <Signal capture_enable="true">frame_renderer_inst/gpu_inst/op.color</Signal>
+            <Bus capture_enable="true" name="frame_renderer_inst/gpu_op_fifo/rd_data[57:0]">
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[57]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[56]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[55]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[54]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[53]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[52]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[51]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[50]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[49]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[48]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[47]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[46]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[45]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[44]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[43]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[42]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[41]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[40]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[39]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[38]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[37]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[36]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[35]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[34]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[33]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[32]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[31]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[30]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[29]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[28]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[27]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[26]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[25]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[24]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[23]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[22]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[21]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[20]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[19]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[18]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[17]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[16]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[15]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[14]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[13]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[12]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[11]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[10]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[9]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[8]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[7]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[6]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[5]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[4]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[3]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[2]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[1]</Signal>
+                <Signal>frame_renderer_inst/gpu_op_fifo/rd_data[0]</Signal>
+            </Bus>
         </SignalList>
         <Triggers>
             <Trigger index="0">
@@ -209,5 +269,5 @@
             <Expression>M0</Expression>
         </Expressions>
     </AoCore>
-    <GAO_ID>0110100001100101</GAO_ID>
+    <GAO_ID>1100110101101001</GAO_ID>
 </GAO_CONFIG>
