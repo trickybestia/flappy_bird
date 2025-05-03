@@ -84,7 +84,7 @@ reg [10:0] bird_y;
 
 wire [4:0] pipes_list_count;
 
-reg pipes_list_ce;
+wire pipes_list_ce;
 
 reg    pipes_list_insert_en;
 pipe_t pipes_list_insert_data;
@@ -99,14 +99,17 @@ wire [10:0] lfsr_rng_out;
 
 // Assignments
 
-assign status_wait_swap = state == WAIT_SWAP;
+assign pipes_list_ce        = ce && state != DRAW_PIPES_LOOP_TOP;
+assign pipes_list_iter_in.x = state == MOVE_PIPES_LOOP ? pipes_list_iter_out.x - 1 : pipes_list_iter_out.x;
+assign pipes_list_iter_in.y = pipes_list_iter_out.y;
+assign status_wait_swap     = state == WAIT_SWAP;
 
 // Modules
 
 pipes_list pipes_list_inst (
     .clk,
     .rst,
-    .ce             (ce && pipes_list_ce),
+    .ce             (pipes_list_ce),
     .count          (pipes_list_count),
     .insert_en      (pipes_list_insert_en),
     .insert_data    (pipes_list_insert_data),
@@ -162,11 +165,9 @@ initial begin
     state                  <= DRAW_BACKGROUND;
     wait_gpu_next_state    <= DRAW_BACKGROUND;
     bird_y                 <= VER_ACTIVE_PIXELS / 2 - BIRD_HEIGHT / 2;
-    pipes_list_ce          <= 1'b1;
     pipes_list_insert_en   <= '0;
     pipes_list_insert_data <= '0;
     pipes_list_iter_start  <= '0;
-    pipes_list_iter_in     <= '0;
     pipes_list_iter_remove <= '0;
     op                     <= '0;
     op_wr_en               <= '0;
@@ -179,11 +180,9 @@ always_ff @(posedge clk) begin
         state                  <= DRAW_BACKGROUND;
         wait_gpu_next_state    <= DRAW_BACKGROUND;
         bird_y                 <= VER_ACTIVE_PIXELS / 2 - BIRD_HEIGHT / 2;
-        pipes_list_ce          <= 1'b1;
         pipes_list_insert_en   <= '0;
         pipes_list_insert_data <= '0;
         pipes_list_iter_start  <= '0;
-        pipes_list_iter_in     <= '0;
         pipes_list_iter_remove <= '0;
         op                     <= '0;
         op_wr_en               <= '0;
@@ -238,10 +237,7 @@ always_ff @(posedge clk) begin
                 state <= MOVE_PIPES_LOOP;
             end
             MOVE_PIPES_LOOP: begin
-                if (pipes_list_iter_out_valid) begin
-                    pipes_list_iter_in.x <= pipes_list_iter_out.x - 1;
-                    pipes_list_iter_in.y <= pipes_list_iter_out.y;
-                end else if (pipes_list_count == '0) begin// || HOR_ACTIVE_PIXELS - pipes_list_iter_out.x - 1 - PIPE_WIDTH >= PIPE_HOR_GAP) begin
+                if (!pipes_list_iter_out_valid && pipes_list_count == '0) begin// || HOR_ACTIVE_PIXELS - pipes_list_iter_out.x - 1 - PIPE_WIDTH >= PIPE_HOR_GAP) begin
                     state <= MOVE_PIPES_CREATE_PIPE;
                 end else begin
                     state <= CHECK_COLLISION;
@@ -277,13 +273,11 @@ always_ff @(posedge clk) begin
             end
             DRAW_PIPES_1: begin
                 pipes_list_iter_start <= 1;
-                pipes_list_ce         <= 1;
 
                 state <= DRAW_PIPES_2;
             end
             DRAW_PIPES_2: begin
                 pipes_list_iter_start <= 0;
-                pipes_list_ce         <= 0;
 
                 state <= DRAW_PIPES_LOOP_TOP;
             end
@@ -293,11 +287,7 @@ always_ff @(posedge clk) begin
                 start_x = max(pipes_list_iter_out.x, 0);
                 end_x = min(pipes_list_iter_out.x + PIPE_WIDTH, HOR_ACTIVE_PIXELS);
 
-                pipes_list_ce <= 1;
-
                 if (pipes_list_iter_out_valid) begin
-                    pipes_list_iter_in <= pipes_list_iter_out;
-
                     if (end_x <= 0) begin
                         pipes_list_iter_remove <= 1;
                         
@@ -339,8 +329,6 @@ always_ff @(posedge clk) begin
                 op.scale    <= '0;
 
                 if (pipes_list_iter_out_valid) begin
-                    pipes_list_ce <= 0;
-
                     wait_gpu(DRAW_PIPES_LOOP_TOP);
                 end else begin
                     wait_gpu(DRAW_SCORE);
