@@ -1,18 +1,20 @@
 [*]
 [*] GTKWave Analyzer v3.3.121 (w)1999-2024 BSI
-[*] Fri May  2 12:14:27 2025
+[*] Fri May  2 17:34:55 2025
 [*]
 [dumpfile] "/home/trickybestia/projects/gowin/flappy_bird/tb/cpu_tb.vcd"
-[dumpfile_mtime] "Fri May  2 12:03:06 2025"
-[dumpfile_size] 311296
+[dumpfile_mtime] "Fri May  2 17:26:33 2025"
+[dumpfile_size] 2827001
 [savefile] "/home/trickybestia/projects/gowin/flappy_bird/tb/cpu_tb.gtkw"
-[timestart] 82300
+[timestart] 163053700
 [size] 1920 966
 [pos] -1 -1
-*-14.567668 155000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-14.567668 163135000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] cpu_tb.
+[treeopen] cpu_tb.uut.
+[treeopen] cpu_tb.uut.pipes_list_inst.
 [sst_width] 466
-[signals_width] 230
+[signals_width] 254
 [sst_expanded] 1
 [sst_vpaned_height] 277
 @28
@@ -29,18 +31,35 @@ cpu_tb.op[57:0]
 @28
 cpu_tb.op_wr_en
 cpu_tb.status_lose
+@24
+cpu_tb.uut.bird_y[10:0]
+@28
 cpu_tb.status_wait_gpu
 cpu_tb.status_wait_swap
 @24
 cpu_tb.uut.pipes_list_count[4:0]
 @28
-cpu_tb.uut.pipes_list_iter_start
-cpu_tb.uut.pipes_list_iter_done
-cpu_tb.uut.pipes_list_iter_remove
-@29
 cpu_tb.uut.pipes_list_ce
+cpu_tb.uut.pipes_list_iter_start
+cpu_tb.uut.pipes_list_iter_remove
 @22
 cpu_tb.uut.pipes_list_iter_out[22:0]
+@28
+cpu_tb.uut.pipes_list_iter_out_valid
+cpu_tb.uut.pipes_list_inst.iter_out_valid_prev
+@22
 cpu_tb.uut.pipes_list_iter_in[22:0]
+@28
+cpu_tb.uut.pipes_list_inst.fifo_inst.wr_en
+@22
+cpu_tb.uut.pipes_list_inst.fifo_inst.wr_data[22:0]
+cpu_tb.uut.pipes_list_inst.fifo_inst.count[4:0]
+@28
+cpu_tb.uut.pipes_list_insert_en
+@22
+cpu_tb.uut.pipes_list_insert_data[22:0]
+@24
+cpu_tb.uut.$unm_blk_36.start_x[11:0]
+cpu_tb.uut.$unm_blk_36.end_x[11:0]
 [pattern_trace] 1
 [pattern_trace] 0

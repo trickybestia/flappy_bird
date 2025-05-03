@@ -69,14 +69,24 @@ initial begin
     swap    = 0;
     op_full = 0;
     
-    repeat (599) begin
-        wait (status_wait_swap);
+    repeat (1000) begin
+        reg break_;
+
+        break_ = 0;
+
+        while (!break_) begin
+            if (status_wait_swap) begin
+                break_ = 1;
+            end
+
+            #10;
+        end
+        
+        btn = !btn;
 
         swap = 1;
         #10 swap = 0;
     end
-
-    wait (status_wait_swap);
 
     $finish;
 end
