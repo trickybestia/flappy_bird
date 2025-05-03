@@ -41,11 +41,12 @@ typedef enum {
     DRAW_PIPES_2               = 13,
     DRAW_PIPES_LOOP_TOP        = 14,
     DRAW_PIPES_LOOP_BOT        = 15,
-    DRAW_SCORE                 = 16,
-    WAIT_GPU_1                 = 17,
-    WAIT_GPU_2                 = 18,
-    WAIT_SWAP_LOG              = 19,
-    WAIT_SWAP                  = 20
+    DRAW_SCORE_BACKGROUND      = 16,
+    DRAW_SCORE                 = 17,
+    WAIT_GPU_1                 = 18,
+    WAIT_GPU_2                 = 19,
+    WAIT_SWAP_LOG              = 20,
+    WAIT_SWAP                  = 21
 } state_t;
 
 // Parameters
@@ -387,7 +388,7 @@ always_ff @(posedge clk) begin
                 end else begin
                     pipes_list_iter_remove <= 0;
 
-                    state <= DRAW_SCORE;
+                    state <= DRAW_SCORE_BACKGROUND;
                 end
             end
             DRAW_PIPES_LOOP_BOT: begin
@@ -408,8 +409,20 @@ always_ff @(posedge clk) begin
                 if (pipes_list_iter_out_valid) begin
                     wait_gpu(DRAW_PIPES_LOOP_TOP);
                 end else begin
-                    wait_gpu(DRAW_SCORE);
+                    wait_gpu(DRAW_SCORE_BACKGROUND);
                 end
+            end
+            DRAW_SCORE_BACKGROUND: begin
+                op.x        <= HOR_ACTIVE_PIXELS - 2 * SCORE_HOR_OFFSET - SCORE_DIGIT_WIDTH - (SCORE_HOR_GAP + SCORE_DIGIT_WIDTH) * (SCORE_DIGITS - 1);
+                op.y        <= '0;
+                op.width    <= SCORE_DIGITS * SCORE_DIGIT_WIDTH + SCORE_HOR_GAP * (SCORE_DIGITS - 1) + 2 * SCORE_HOR_OFFSET;
+                op.height   <= SCORE_DIGIT_HEIGHT + 2 * SCORE_VER_OFFSET;
+                op.color    <= '0;
+                op.mem_en   <= '0;
+                op.mem_addr <= '0;
+                op.scale    <= '0;
+
+                wait_gpu(DRAW_SCORE);
             end
             DRAW_SCORE: begin
                 op.x        <= HOR_ACTIVE_PIXELS - SCORE_HOR_OFFSET - SCORE_DIGIT_WIDTH - (SCORE_HOR_GAP + SCORE_DIGIT_WIDTH) * draw_score_index;

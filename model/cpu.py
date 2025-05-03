@@ -46,6 +46,7 @@ class Cpu:
 
         self._draw_bird()
         self._draw_pipes()
+        self._draw_score_background()
         self._draw_score()
 
         return CpuOutputs(self.lose)
@@ -164,6 +165,25 @@ class Cpu:
             )
 
             i += 1
+
+    def _draw_score_background(self):
+        self.gpu.draw(
+            GpuOp(
+                HOR_ACTIVE_PIXELS
+                - 2 * SCORE_HOR_OFFSET
+                - SCORE_DIGIT_WIDTH
+                - (SCORE_HOR_GAP + SCORE_DIGIT_WIDTH) * (SCORE_DIGITS - 1),
+                0,
+                SCORE_DIGITS * SCORE_DIGIT_WIDTH
+                + SCORE_HOR_GAP * (SCORE_DIGITS - 1)
+                + 2 * SCORE_HOR_OFFSET,
+                SCORE_DIGIT_HEIGHT + 2 * SCORE_VER_OFFSET,
+                False,
+                False,
+                0,
+                0,
+            )
+        )
 
     def _draw_score(self):
         score = self.score
