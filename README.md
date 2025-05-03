@@ -1,10 +1,19 @@
-# 🚧W.I.P.🚧 flappy_bird
+# flappy_bird
 
 Flappy Bird game on Sipeed Tang Primer 20K FPGA board.
 
+## Key features
+
+* Resolution: 640x480 60 FPS
+* Double buffered HDMI video output using two 300 Kbit BSRAMs and GOWIN DVI TX IP core
+* 64.125 MHz frequency for [cpu](src/cpu.sv) and [gpu](src/gpu.sv) modules
+* Autoplay switch: game plays itself!
+
 ## [main](https://github.com/trickybestia/flappy_bird/tree/main) branch
 
-It contains work in progress implementation with logic splitted between [cpu module](https://github.com/trickybestia/flappy_bird/blob/main/src/cpu.sv) and [gpu module](https://github.com/trickybestia/flappy_bird/blob/main/src/gpu.sv). GPU draws primitives: filled and textured rectangles. CPU sends commands to GPU. CPU is still in development so now it is nothing more than a simple fsm.
+Logic is splitted between [cpu](src/cpu.sv) and [gpu](src/gpu.sv) modules. GPU draws primitives: filled and textured rectangles. CPU sends commands to GPU.
+
+### Model
 
 There is a high-level game model written in Python to debug game logic.
 
@@ -46,7 +55,7 @@ gtkwave pipes_list_tb.gtkw
 
 ## Old [single-fsm](https://github.com/trickybestia/flappy_bird/tree/single-fsm) branch
 
-All logic is implemented using single fsm, which renders pixels to framebuffer. Not a good example of SystemVerilog development. 😅
+All logic is implemented using single FSM, which renders pixels to framebuffer. Not a good example of SystemVerilog development. 😅
 
 ## License
 
