@@ -2,10 +2,10 @@
 [*] GTKWave Analyzer v3.3.121 (w)1999-2024 BSI
 [*] Sat May  3 07:03:19 2025
 [*]
-[dumpfile] "/home/trickybestia/projects/gowin/flappy_bird/tb/pipes_list_tb.vcd"
+[dumpfile] "pipes_list_tb.vcd"
 [dumpfile_mtime] "Sat May  3 07:02:47 2025"
 [dumpfile_size] 10291
-[savefile] "/home/trickybestia/projects/gowin/flappy_bird/tb/pipes_list_tb.gtkw"
+[savefile] "pipes_list_tb.gtkw"
 [timestart] 0
 [size] 1920 966
 [pos] -1 -1

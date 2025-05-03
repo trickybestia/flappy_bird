@@ -2,10 +2,10 @@
 [*] GTKWave Analyzer v3.3.121 (w)1999-2024 BSI
 [*] Fri May  2 12:18:28 2025
 [*]
-[dumpfile] "/home/trickybestia/projects/gowin/flappy_bird/tb/fifo_tb.vcd"
+[dumpfile] "fifo_tb.vcd"
 [dumpfile_mtime] "Fri May  2 12:17:35 2025"
 [dumpfile_size] 2874
-[savefile] "/home/trickybestia/projects/gowin/flappy_bird/tb/fifo_tb.gtkw"
+[savefile] "fifo_tb.gtkw"
 [timestart] 0
 [size] 1920 966
 [pos] -461 -184

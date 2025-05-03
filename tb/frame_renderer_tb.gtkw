@@ -2,10 +2,10 @@
 [*] GTKWave Analyzer v3.3.121 (w)1999-2024 BSI
 [*] Sat May  3 20:57:21 2025
 [*]
-[dumpfile] "/home/trickybestia/projects/gowin/flappy_bird/tb/frame_renderer_tb.vcd"
+[dumpfile] "frame_renderer_tb.vcd"
 [dumpfile_mtime] "Sat May  3 20:49:59 2025"
 [dumpfile_size] 119752140
-[savefile] "/home/trickybestia/projects/gowin/flappy_bird/tb/frame_renderer_tb.gtkw"
+[savefile] "frame_renderer_tb.gtkw"
 [timestart] 0
 [size] 1920 966
 [pos] -1 -1

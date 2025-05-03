@@ -2,10 +2,10 @@
 [*] GTKWave Analyzer v3.3.121 (w)1999-2024 BSI
 [*] Sat May  3 11:31:01 2025
 [*]
-[dumpfile] "/home/trickybestia/projects/gowin/flappy_bird/tb/cpu_tb.vcd"
+[dumpfile] "cpu_tb.vcd"
 [dumpfile_mtime] "Sat May  3 11:29:46 2025"
 [dumpfile_size] 6879347
-[savefile] "/home/trickybestia/projects/gowin/flappy_bird/tb/cpu_tb.gtkw"
+[savefile] "cpu_tb.gtkw"
 [timestart] 0
 [size] 1920 966
 [pos] -1 -1
