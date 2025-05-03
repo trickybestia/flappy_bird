@@ -6,7 +6,7 @@ typedef struct packed {
     logic        color;               // 1
     logic        mem_en;              // 1
     logic [10:0] mem_addr;            // 11
-    logic [0:0]  scale;               // 1
-} gpu_op_t;                           // 58
+    logic [1:0]  scale;               // 2
+} gpu_op_t;                           // 59
 
 `endif

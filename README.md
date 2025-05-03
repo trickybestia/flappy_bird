@@ -19,7 +19,7 @@ Testbenches are located in [tb](tb) folder. To run them install Icarus Verilog a
 #### cpu_tb.sv
 
 ```
-iverilog -g2005-sv -grelative-include -s cpu_tb -o cpu_tb.out cpu_tb.sv ../src/{cpu.sv,fifo.sv,gpu_op_t.sv,pipes_list.sv,lfsr_rng.sv} && ./cpu_tb.out
+iverilog -g2005-sv -grelative-include -s cpu_tb cpu_tb.sv ../src/{cpu.sv,fifo.sv,gpu_op_t.sv,pipes_list.sv,lfsr_rng.sv,bcd_ripple_carry_adder.sv,bcd_adder.sv} -o cpu_tb.out && ./cpu_tb.out
 gtkwave cpu_tb.gtkw
 ```
 

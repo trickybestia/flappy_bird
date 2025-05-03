@@ -44,23 +44,26 @@ typedef enum {
     DRAW_SCORE                 = 16,
     WAIT_GPU_1                 = 17,
     WAIT_GPU_2                 = 18,
-    WAIT_SWAP                  = 19
+    WAIT_SWAP_LOG              = 19,
+    WAIT_SWAP                  = 20
 } state_t;
 
 // Parameters
 
-parameter BIRD_WIDTH         = 34;
-parameter BIRD_HEIGHT        = 24;
-parameter BIRD_HOR_OFFSET    = 20;
-parameter PIPE_VER_GAP       = 200;
-parameter PIPE_HOR_GAP       = 150;
-parameter PIPE_WIDTH         = 40;
-parameter SCORE_DIGITS       = 3;
-parameter SCORE_VER_OFFSET   = 10;
-parameter SCORE_HOR_OFFSET   = 490;
-parameter SCORE_HOR_GAP      = 10;
-parameter SCORE_DIGIT_WIDTH  = 5*8;
-parameter SCORE_DIGIT_HEIGHT = 9*8;
+parameter BIRD_WIDTH             = 34;
+parameter BIRD_HEIGHT            = 24;
+parameter BIRD_HOR_OFFSET        = 20;
+parameter PIPE_VER_GAP           = 200;
+parameter PIPE_HOR_GAP           = 150;
+parameter PIPE_WIDTH             = 40;
+parameter SCORE_DIGITS           = 3;
+parameter SCORE_VER_OFFSET       = 10;
+parameter SCORE_HOR_OFFSET       = 20;
+parameter SCORE_HOR_GAP          = 10;
+parameter SCORE_DIGIT_WIDTH      = 5*8;
+parameter SCORE_DIGIT_HEIGHT     = 9*8;
+parameter ASSET_MEM_DIGITS_START = 204;
+parameter ASSET_MEM_DIGITS_STEP  = 45;
 
 // Ports
 
@@ -85,7 +88,10 @@ output     status_wait_swap;
 state_t state;
 state_t wait_gpu_next_state;
 
-reg [10:0] bird_y;
+reg [10:0]               bird_y;
+reg [SCORE_DIGITS*4-1:0] score_bcd;
+
+reg [$clog2(SCORE_DIGITS)-1:0] draw_score_index;
 
 wire       autoplay_btn;
 reg [10:0] closest_pipe_y;
@@ -105,6 +111,8 @@ wire   pipes_list_iter_out_valid;
 reg    pipes_list_iter_remove;
 
 wire [10:0] lfsr_rng_out;
+
+wire [SCORE_DIGITS*4-1:0] score_adder_out;
 
 // Assignments
 
@@ -139,6 +147,16 @@ lfsr_rng #(
     .rst,
     .ce,
     .out (lfsr_rng_out)
+);
+
+bcd_ripple_carry_adder #(
+    .DIGITS_COUNT(SCORE_DIGITS)
+) score_adder (
+    .a(score_bcd),
+    .b(1),
+    .cin(0),
+    .sum(score_adder_out),
+    .cout()
 );
 
 // Processes
@@ -201,6 +219,8 @@ initial begin
     state                  <= DRAW_BACKGROUND;
     wait_gpu_next_state    <= DRAW_BACKGROUND;
     bird_y                 <= VER_ACTIVE_PIXELS / 2 - BIRD_HEIGHT / 2;
+    score_bcd              <= '0;
+    draw_score_index       <= '0;
     pipes_list_insert_en   <= '0;
     pipes_list_insert_data <= '0;
     pipes_list_iter_start  <= '0;
@@ -216,6 +236,8 @@ always_ff @(posedge clk) begin
         state                  <= DRAW_BACKGROUND;
         wait_gpu_next_state    <= DRAW_BACKGROUND;
         bird_y                 <= VER_ACTIVE_PIXELS / 2 - BIRD_HEIGHT / 2;
+        score_bcd              <= '0;
+        draw_score_index       <= '0;
         pipes_list_insert_en   <= '0;
         pipes_list_insert_data <= '0;
         pipes_list_iter_start  <= '0;
@@ -344,9 +366,10 @@ always_ff @(posedge clk) begin
                 if (pipes_list_iter_out_valid) begin
                     if (end_x <= 0) begin
                         pipes_list_iter_remove <= 1;
+
+                        score_bcd <= score_adder_out;
                         
                         state <= DRAW_PIPES_2;
-                        // increment score
                     end else begin
                         pipes_list_iter_remove <= 0;
 
@@ -389,9 +412,24 @@ always_ff @(posedge clk) begin
                 end
             end
             DRAW_SCORE: begin
-                $display("cpu.sv: done, waiting for swap\n");
+                op.x        <= HOR_ACTIVE_PIXELS - SCORE_HOR_OFFSET - SCORE_DIGIT_WIDTH - (SCORE_HOR_GAP + SCORE_DIGIT_WIDTH) * draw_score_index;
+                op.y        <= SCORE_VER_OFFSET;
+                op.width    <= SCORE_DIGIT_WIDTH;
+                op.height   <= SCORE_DIGIT_HEIGHT;
+                op.color    <= '0;
+                op.mem_en   <= 1'b1;
+                op.mem_addr <= ASSET_MEM_DIGITS_START + ASSET_MEM_DIGITS_STEP * score_bcd[draw_score_index*3+:4];
+                op.scale    <= 3;
 
-                state <= WAIT_SWAP;
+                if (draw_score_index == SCORE_DIGITS - 1) begin
+                    draw_score_index <= '0;
+
+                    wait_gpu(WAIT_SWAP_LOG);
+                end else begin
+                    draw_score_index <= draw_score_index + 1;
+
+                    wait_gpu(DRAW_SCORE);
+                end
             end
             WAIT_GPU_1: begin
                 if (!op_full) begin
@@ -409,6 +447,11 @@ always_ff @(posedge clk) begin
                 status_wait_gpu <= '0;
 
                 state <= wait_gpu_next_state;
+            end
+            WAIT_SWAP_LOG: begin
+                $display("cpu.sv: done, waiting for swap\n");
+
+                state <= WAIT_SWAP;
             end
             WAIT_SWAP: begin
                 if (swap) begin

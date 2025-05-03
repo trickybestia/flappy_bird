@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.121 (w)1999-2024 BSI
-[*] Fri May  2 17:34:55 2025
+[*] Sat May  3 11:31:01 2025
 [*]
 [dumpfile] "/home/trickybestia/projects/gowin/flappy_bird/tb/cpu_tb.vcd"
-[dumpfile_mtime] "Fri May  2 17:26:33 2025"
-[dumpfile_size] 2827001
+[dumpfile_mtime] "Sat May  3 11:29:46 2025"
+[dumpfile_size] 6879347
 [savefile] "/home/trickybestia/projects/gowin/flappy_bird/tb/cpu_tb.gtkw"
-[timestart] 163053700
+[timestart] 0
 [size] 1920 966
 [pos] -1 -1
-*-14.567668 163135000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-14.478354 19200 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] cpu_tb.
 [treeopen] cpu_tb.uut.
 [treeopen] cpu_tb.uut.pipes_list_inst.
@@ -41,12 +41,12 @@ cpu_tb.uut.pipes_list_count[4:0]
 @28
 cpu_tb.uut.pipes_list_ce
 cpu_tb.uut.pipes_list_iter_start
+@29
 cpu_tb.uut.pipes_list_iter_remove
 @22
 cpu_tb.uut.pipes_list_iter_out[22:0]
 @28
 cpu_tb.uut.pipes_list_iter_out_valid
-cpu_tb.uut.pipes_list_inst.iter_out_valid_prev
 @22
 cpu_tb.uut.pipes_list_iter_in[22:0]
 @28
@@ -58,8 +58,7 @@ cpu_tb.uut.pipes_list_inst.fifo_inst.count[4:0]
 cpu_tb.uut.pipes_list_insert_en
 @22
 cpu_tb.uut.pipes_list_insert_data[22:0]
-@24
-cpu_tb.uut.$unm_blk_36.start_x[11:0]
-cpu_tb.uut.$unm_blk_36.end_x[11:0]
+cpu_tb.uut.score_bcd[11:0]
+cpu_tb.uut.score_adder_out[11:0]
 [pattern_trace] 1
 [pattern_trace] 0
