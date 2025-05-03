@@ -431,7 +431,7 @@ always_ff @(posedge clk) begin
                 op.height   <= SCORE_DIGIT_HEIGHT;
                 op.color    <= '0;
                 op.mem_en   <= 1'b1;
-                op.mem_addr <= ASSET_MEM_DIGITS_START + ASSET_MEM_DIGITS_STEP * score_bcd[draw_score_index*3+:4];
+                op.mem_addr <= ASSET_MEM_DIGITS_START + ASSET_MEM_DIGITS_STEP * score_bcd[draw_score_index*4+:4];
                 op.scale    <= 3;
 
                 if (draw_score_index == SCORE_DIGITS - 1) begin
