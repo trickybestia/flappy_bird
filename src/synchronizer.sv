@@ -25,6 +25,11 @@ reg sync;
 
 // Processes
 
+initial begin
+    sync <= 0;
+    out  <= 0;
+end
+
 always @(posedge clk) begin
     if (ce) begin
         sync <= in;

@@ -71,6 +71,12 @@ assign de = (x_internal >= HOR_BACK_PORCH_PIXELS
 
 // Processes
 
+initial begin
+    x_internal <= '0;
+    y_internal <= '0;
+    swap       <= '0;
+end
+
 always_comb begin
     next_swap = 1'b0;
 

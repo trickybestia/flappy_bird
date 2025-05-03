@@ -75,6 +75,10 @@ frame_buffer_mem buf1 (
 
 // Processes
 
+initial begin
+    selected_buf <= 0;
+end
+
 always_ff @(posedge rd_clk) begin
     if (swap) selected_buf <= ~selected_buf;
 end

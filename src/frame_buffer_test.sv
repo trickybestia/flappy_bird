@@ -53,6 +53,15 @@ reg [VER_ACTIVE_PIXELS_WIDTH-1:0] y;
 
 // Processes
 
+initial begin
+    state   <= WORK;
+    wr_en   <= '0;
+    wr_addr <= '0;
+    wr_data <= '0;
+    x       <= '0;
+    y       <= '0;
+end
+
 always_ff @(posedge clk) begin
     if (rst) begin
         state   <= WORK;

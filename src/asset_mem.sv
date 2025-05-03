@@ -14,7 +14,7 @@ localparam ADDR_WIDTH = $clog2(SIZE);
 
 input [ADDR_WIDTH-1:0] addr;
 
-output reg out;
+output out;
 
 // Wires/regs
 

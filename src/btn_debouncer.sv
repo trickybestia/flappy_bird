@@ -44,6 +44,11 @@ synchronizer synchronizer_inst (
 
 // Processes
 
+initial begin
+    btn_debounced_internal <= '0;
+    counter                <= '0;
+end
+
 always_ff @(posedge clk) begin
     if (ce) begin        
         if (synchronizer_out) begin
