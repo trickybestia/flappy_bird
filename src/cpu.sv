@@ -33,16 +33,18 @@ typedef enum {
     MOVE_PIPES_LOOP            = 5,
     MOVE_PIPES_CREATE_PIPE     = 6,
     MOVE_PIPES_CREATE_PIPE_END = 7,
-    CHECK_COLLISION            = 8,
-    DRAW_BIRD                  = 9,
-    DRAW_PIPES_1               = 10,
-    DRAW_PIPES_2               = 11,
-    DRAW_PIPES_LOOP_TOP        = 12,
-    DRAW_PIPES_LOOP_BOT        = 13,
-    DRAW_SCORE                 = 14,
-    WAIT_GPU_1                 = 15,
-    WAIT_GPU_2                 = 16,
-    WAIT_SWAP                  = 17
+    CHECK_COLLISION_1          = 8,
+    CHECK_COLLISION_2          = 9,
+    CHECK_COLLISION_LOOP       = 10,
+    DRAW_BIRD                  = 11,
+    DRAW_PIPES_1               = 12,
+    DRAW_PIPES_2               = 13,
+    DRAW_PIPES_LOOP_TOP        = 14,
+    DRAW_PIPES_LOOP_BOT        = 15,
+    DRAW_SCORE                 = 16,
+    WAIT_GPU_1                 = 17,
+    WAIT_GPU_2                 = 18,
+    WAIT_SWAP                  = 19
 } state_t;
 
 // Parameters
@@ -169,6 +171,14 @@ function signed [11:0] max;
     end
 endfunction
 
+function check_rectangles_intersection;
+    input signed [11:0] x1, y1, w1, h1, x2, y2, w2, h2;
+
+    begin
+        check_rectangles_intersection = x1 < x2 + w2 && x1 + w1 > x2 && y1 < y2 + h2 && y1 + h1 > y2;
+    end
+endfunction
+
 initial begin
     closest_pipe_y                 <= VER_ACTIVE_PIXELS / 2 - BIRD_HEIGHT / 2;
     pipes_list_iter_out_valid_prev <= 0;
@@ -267,7 +277,7 @@ always_ff @(posedge clk) begin
                     if (pipes_list_count == '0 || HOR_ACTIVE_PIXELS - pipes_list_iter_out.x - 1 - PIPE_WIDTH >= PIPE_HOR_GAP) begin
                         state <= MOVE_PIPES_CREATE_PIPE;
                     end else begin
-                        state <= CHECK_COLLISION;
+                        state <= CHECK_COLLISION_1;
                     end
                 end
             end
@@ -282,10 +292,26 @@ always_ff @(posedge clk) begin
             MOVE_PIPES_CREATE_PIPE_END: begin
                 pipes_list_insert_en <= 0;
 
-                state <= CHECK_COLLISION;
+                state <= CHECK_COLLISION_1;
             end
-            CHECK_COLLISION: begin
-                state <= DRAW_BIRD;
+            CHECK_COLLISION_1: begin
+                pipes_list_iter_start <= 1;
+
+                state <= CHECK_COLLISION_2;
+            end
+            CHECK_COLLISION_2: begin
+                pipes_list_iter_start <= 0;
+
+                state <= CHECK_COLLISION_LOOP;
+            end
+            CHECK_COLLISION_LOOP: begin
+                if (pipes_list_iter_out_valid) begin
+                    if (check_rectangles_intersection(BIRD_HOR_OFFSET, bird_y, BIRD_WIDTH, BIRD_HEIGHT, pipes_list_iter_out.x, 0, PIPE_WIDTH, pipes_list_iter_out.y) || check_rectangles_intersection(BIRD_HOR_OFFSET, bird_y, BIRD_WIDTH, BIRD_HEIGHT, pipes_list_iter_out.x, pipes_list_iter_out.y + PIPE_VER_GAP, PIPE_WIDTH, VER_ACTIVE_PIXELS - pipes_list_iter_out.y - PIPE_VER_GAP)) begin
+                        status_lose <= 1;
+                    end
+                end else begin
+                    state <= DRAW_BIRD;
+                end
             end
             DRAW_BIRD: begin
                 op.x        <= BIRD_HOR_OFFSET;
