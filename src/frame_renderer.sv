@@ -8,6 +8,8 @@ module frame_renderer #(
     rst,
     ce,
 
+    switch,
+
     btn,
 
     swap,
@@ -28,6 +30,8 @@ localparam WR_ADDR_WIDTH = $clog2(HOR_ACTIVE_PIXELS * VER_ACTIVE_PIXELS);
 input clk;
 input rst;
 input ce;
+
+input switch;
 
 input btn;
 
@@ -60,14 +64,15 @@ cpu #(
     .clk,
     .rst,
     .ce,
+    .autoplay         (switch),
     .btn,
     .swap,
-    .op(fifo_wr_data),
-    .op_wr_en(fifo_wr_en),
-    .op_full(fifo_full),
-    .status_lose(leds[0]),
-    .status_wait_gpu(leds[2]),
-    .status_wait_swap(leds[3])
+    .op               (fifo_wr_data),
+    .op_wr_en         (fifo_wr_en),
+    .op_full          (fifo_full),
+    .status_lose      (leds[0]),
+    .status_wait_gpu  (leds[2]),
+    .status_wait_swap (leds[3])
 );
 
 fifo #(
@@ -77,12 +82,13 @@ fifo #(
     .clk,
     .rst,
     .ce,
-    .wr_en(fifo_wr_en),
-    .wr_data(fifo_wr_data),
-    .rd_en(fifo_rd_en),
-    .rd_data(fifo_rd_data),
-    .empty(fifo_empty),
-    .full(fifo_full)
+    .wr_en   (fifo_wr_en),
+    .wr_data (fifo_wr_data),
+    .rd_en   (fifo_rd_en),
+    .rd_data (fifo_rd_data),
+    .empty   (fifo_empty),
+    .full    (fifo_full),
+    .count   ()
 );
 
 gpu #(
@@ -92,13 +98,13 @@ gpu #(
     .clk,
     .rst,
     .ce,
-    .op(fifo_rd_data),
-    .op_rd_en(fifo_rd_en),
-    .op_empty(fifo_empty),
+    .op         (fifo_rd_data),
+    .op_rd_en   (fifo_rd_en),
+    .op_empty   (fifo_empty),
     .wr_en,
     .wr_addr,
     .wr_data,
-    .status_led(leds[1])
+    .status_led (leds[1])
 );
 
 // Processes

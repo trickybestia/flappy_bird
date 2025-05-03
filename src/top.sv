@@ -204,6 +204,7 @@ frame_renderer #(
     .clk(clk_renderer),
     .rst(buttons_debounced_clk_renderer[0] | buttons_debounced_clk_renderer[1]),
     .ce,
+    .switch(switches[0]),
     .btn(buttons_debounced_clk_renderer[2]),
     .swap,
     .wr_en(frame_renderer_wr_en),
@@ -282,7 +283,7 @@ always_comb begin
             g = g_test_1;
             b = b_test_1;
         end
-        6: begin
+        6, 7: begin
             frame_buffer_wr_en   = frame_renderer_wr_en;
             frame_buffer_wr_addr = frame_renderer_wr_addr;
             frame_buffer_wr_data = frame_renderer_wr_data;
@@ -291,7 +292,7 @@ always_comb begin
             g = frame_buffer_rd_data ? 8'd255 : '0;
             b = frame_buffer_rd_data ? 8'd255 : '0;
         end
-        7: begin
+        8: begin
             frame_buffer_wr_en   = frame_buffer_test_wr_en;
             frame_buffer_wr_addr = frame_buffer_test_wr_addr;
             frame_buffer_wr_data = frame_buffer_test_wr_data;

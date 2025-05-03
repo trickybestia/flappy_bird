@@ -9,6 +9,8 @@ module cpu #(
     rst,
     ce,
 
+    autoplay,
+
     btn,
 
     swap,
@@ -63,6 +65,8 @@ parameter SCORE_DIGIT_HEIGHT = 9*8;
 
 input clk, rst, ce;
 
+input autoplay;
+
 input btn;
 
 input swap;
@@ -81,6 +85,8 @@ state_t state;
 state_t wait_gpu_next_state;
 
 reg [10:0] bird_y;
+
+reg autoplay_btn;
 
 wire [4:0] pipes_list_count;
 
@@ -165,6 +171,7 @@ initial begin
     state                  <= DRAW_BACKGROUND;
     wait_gpu_next_state    <= DRAW_BACKGROUND;
     bird_y                 <= VER_ACTIVE_PIXELS / 2 - BIRD_HEIGHT / 2;
+    autoplay_btn           <= '0;
     pipes_list_insert_en   <= '0;
     pipes_list_insert_data <= '0;
     pipes_list_iter_start  <= '0;
@@ -180,6 +187,7 @@ always_ff @(posedge clk) begin
         state                  <= DRAW_BACKGROUND;
         wait_gpu_next_state    <= DRAW_BACKGROUND;
         bird_y                 <= VER_ACTIVE_PIXELS / 2 - BIRD_HEIGHT / 2;
+        autoplay_btn           <= '0;
         pipes_list_insert_en   <= '0;
         pipes_list_insert_data <= '0;
         pipes_list_iter_start  <= '0;
@@ -210,7 +218,9 @@ always_ff @(posedge clk) begin
                 end
             end
             MOVE_BIRD: begin
-                if (btn) begin
+                autoplay_btn <= !autoplay_btn;
+
+                if (btn || (autoplay && autoplay_btn)) begin
                     if (bird_y <= 2) begin
                         status_lose <= 1'b1;
                     end else begin
