@@ -28,8 +28,15 @@ assign out = mem[addr];
 
 // Processes
 
+`ifdef __ICARUS__
+initial begin
+    $readmemb("../src/asset_mem.mem", mem);
+end
+`else
 initial begin
     $readmemb("asset_mem.mem", mem);
 end
+`endif
+
 
 endmodule
