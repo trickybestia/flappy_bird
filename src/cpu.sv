@@ -53,7 +53,6 @@ parameter BIRD_HOR_OFFSET    = 20;
 parameter PIPE_VER_GAP       = 200;
 parameter PIPE_HOR_GAP       = 150;
 parameter PIPE_WIDTH         = 40;
-parameter PIPES_COUNT        = 5;
 parameter SCORE_DIGITS       = 3;
 parameter SCORE_VER_OFFSET   = 10;
 parameter SCORE_HOR_OFFSET   = 490;
