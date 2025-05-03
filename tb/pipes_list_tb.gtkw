@@ -1,17 +1,19 @@
 [*]
 [*] GTKWave Analyzer v3.3.121 (w)1999-2024 BSI
-[*] Fri May  2 16:06:11 2025
+[*] Sat May  3 07:03:19 2025
 [*]
 [dumpfile] "/home/trickybestia/projects/gowin/flappy_bird/tb/pipes_list_tb.vcd"
-[dumpfile_mtime] "Fri May  2 15:43:28 2025"
+[dumpfile_mtime] "Sat May  3 07:02:47 2025"
 [dumpfile_size] 10291
 [savefile] "/home/trickybestia/projects/gowin/flappy_bird/tb/pipes_list_tb.gtkw"
 [timestart] 0
 [size] 1920 966
 [pos] -1 -1
-*-16.687645 741310 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
-[sst_width] 283
-[signals_width] 166
+*-16.882582 669900 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] pipes_list_tb.
+[treeopen] pipes_list_tb.uut.
+[sst_width] 441
+[signals_width] 190
 [sst_expanded] 1
 [sst_vpaned_height] 277
 @24
@@ -22,11 +24,14 @@ pipes_list_tb.count[4:0]
 pipes_list_tb.insert_en
 pipes_list_tb.insert_data[22:0]
 pipes_list_tb.iter_start
+pipes_list_tb.iter_remove
 pipes_list_tb.iter_in[22:0]
 pipes_list_tb.iter_out[22:0]
-@29
+@28
 pipes_list_tb.iter_out_valid
+pipes_list_tb.uut.iter_out_valid_next
 @24
-pipes_list_tb.iter_remove
+pipes_list_tb.uut.iter_index[4:0]
+pipes_list_tb.uut.iter_index_next[4:0]
 [pattern_trace] 1
 [pattern_trace] 0
