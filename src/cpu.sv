@@ -105,7 +105,7 @@ wire [10:0] lfsr_rng_out;
 
 // Assignments
 
-assign pipes_list_ce        = ce && state != DRAW_PIPES_LOOP_TOP;
+assign pipes_list_ce        = ce && state != DRAW_PIPES_LOOP_TOP && state != WAIT_GPU_1 && state != WAIT_GPU_2;
 assign pipes_list_iter_in.x = state == MOVE_PIPES_LOOP ? pipes_list_iter_out.x - 1 : pipes_list_iter_out.x;
 assign pipes_list_iter_in.y = pipes_list_iter_out.y;
 assign status_wait_swap     = state == WAIT_SWAP;
@@ -247,10 +247,12 @@ always_ff @(posedge clk) begin
                 state <= MOVE_PIPES_LOOP;
             end
             MOVE_PIPES_LOOP: begin
-                if (!pipes_list_iter_out_valid && pipes_list_count == '0) begin// || HOR_ACTIVE_PIXELS - pipes_list_iter_out.x - 1 - PIPE_WIDTH >= PIPE_HOR_GAP) begin
-                    state <= MOVE_PIPES_CREATE_PIPE;
-                end else begin
-                    state <= CHECK_COLLISION;
+                if (!pipes_list_iter_out_valid) begin
+                    if (pipes_list_count == '0 || HOR_ACTIVE_PIXELS - pipes_list_iter_out.x - 1 - PIPE_WIDTH >= PIPE_HOR_GAP) begin
+                        state <= MOVE_PIPES_CREATE_PIPE;
+                    end else begin
+                        state <= CHECK_COLLISION;
+                    end
                 end
             end
             MOVE_PIPES_CREATE_PIPE: begin
