@@ -86,7 +86,9 @@ state_t wait_gpu_next_state;
 
 reg [10:0] bird_y;
 
-reg autoplay_btn;
+wire       autoplay_btn;
+reg [10:0] closest_pipe_y;
+reg        pipes_list_iter_out_valid_prev;
 
 wire [4:0] pipes_list_count;
 
@@ -105,6 +107,7 @@ wire [10:0] lfsr_rng_out;
 
 // Assignments
 
+assign autoplay_btn         = bird_y + BIRD_HEIGHT / 2 > closest_pipe_y + PIPE_VER_GAP / 2;
 assign pipes_list_ce        = ce && state != DRAW_PIPES_LOOP_TOP && state != WAIT_GPU_1 && state != WAIT_GPU_2;
 assign pipes_list_iter_in.x = state == MOVE_PIPES_LOOP ? pipes_list_iter_out.x - 1 : pipes_list_iter_out.x;
 assign pipes_list_iter_in.y = pipes_list_iter_out.y;
@@ -168,10 +171,27 @@ function signed [11:0] max;
 endfunction
 
 initial begin
+    closest_pipe_y                 <= VER_ACTIVE_PIXELS / 2 - BIRD_HEIGHT / 2;
+    pipes_list_iter_out_valid_prev <= 0;
+end
+
+always_ff @(posedge clk) begin
+    if (rst) begin
+        closest_pipe_y                 <= VER_ACTIVE_PIXELS / 2 - BIRD_HEIGHT / 2;
+        pipes_list_iter_out_valid_prev <= 0;
+    end else if (ce) begin
+        pipes_list_iter_out_valid_prev <= pipes_list_iter_out_valid;
+
+        if (pipes_list_iter_out_valid && !pipes_list_iter_out_valid_prev) begin
+            closest_pipe_y <= pipes_list_iter_out.y;
+        end
+    end
+end
+
+initial begin
     state                  <= DRAW_BACKGROUND;
     wait_gpu_next_state    <= DRAW_BACKGROUND;
     bird_y                 <= VER_ACTIVE_PIXELS / 2 - BIRD_HEIGHT / 2;
-    autoplay_btn           <= '0;
     pipes_list_insert_en   <= '0;
     pipes_list_insert_data <= '0;
     pipes_list_iter_start  <= '0;
@@ -187,7 +207,6 @@ always_ff @(posedge clk) begin
         state                  <= DRAW_BACKGROUND;
         wait_gpu_next_state    <= DRAW_BACKGROUND;
         bird_y                 <= VER_ACTIVE_PIXELS / 2 - BIRD_HEIGHT / 2;
-        autoplay_btn           <= '0;
         pipes_list_insert_en   <= '0;
         pipes_list_insert_data <= '0;
         pipes_list_iter_start  <= '0;
@@ -218,8 +237,6 @@ always_ff @(posedge clk) begin
                 end
             end
             MOVE_BIRD: begin
-                autoplay_btn <= !autoplay_btn;
-
                 if (btn || (autoplay && autoplay_btn)) begin
                     if (bird_y <= 2) begin
                         status_lose <= 1'b1;
