@@ -13,6 +13,37 @@ Flappy Bird game on Sipeed Tang Primer 20K FPGA board.
 
 Logic is splitted between [cpu](src/cpu.sv) and [gpu](src/gpu.sv) modules. GPU draws primitives: filled and textured rectangles. CPU sends commands to GPU.
 
+### Uploading to board
+
+1. Open project in GOWIN FPGA DESIGNER.
+2. Click "Run all".
+3. Set 1, 2, 3, 4 switches to "on" and 5 switch to "off" on board.
+4. Open Programmer and click "Program/Configure".
+5. Connect board to monitor using HDMI.
+6. Press "S1" button once.
+
+### Controls
+
+Switch 1 should always be enabled (check [Sipeed Wiki](https://wiki.sipeed.com/hardware/en/tang/tang-primer-20k/primer-20k.html#Dock-ext-board-not-work)).
+
+Remaining switches functions are shown in table below.
+
+| 5 | 4 | 3 | 2 | Description  | Buttons |
+|---|---|---|---|--------------|---------|
+| 0 | 0 | 0 | 1 | Red screen   | |
+| 0 | 0 | 1 | 0 | Green screen | |
+| 0 | 0 | 1 | 1 | Blue screen  | |
+| 0 | 1 | 0 | 0 | Test pattern 1 (diagonals) | |
+| 0 | 1 | 0 | 1 | Test pattern 2 (XOR) | Hold S2 to invert colors | 
+| 0 | 1 | 1 | 0 | Flappy Bird, autoplay off | Hold S2 to make bird fly up |
+| 0 | 1 | 1 | 1 | Flappy Bird, autoplay on | Hold S2 to make bird fly up |
+| 1 | 0 | 0 | 0 | Test pattern using framebuffer (XOR) | Hold S2 to invert colors |
+| x | x | x | x | Black screen | |
+
+Button S0 resets almost all modules.
+
+Button S1 resets only modules that draw pixels to framebuffer and farther, it does not reset framebuffer.
+
 ### Model
 
 There is a high-level game model written in Python to debug game logic.
