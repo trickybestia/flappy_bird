@@ -10,6 +10,13 @@ All commands should be run inside current directory.
 
 ### Top module ([top_tb.sv](top_tb.sv))
 
+Run Synthesis and Place & Route in GOWIN FPGA DESIGNER, then execute following commands (replace PATH_TO_GOWIN_IDE_ROOT with your value):
+
+```bash
+iverilog -g2005-sv -grelative-include -s top_tb -o top_tb.out top_tb.sv ../impl/pnr/flappy_bird.vo PATH_TO_GOWIN_IDE_ROOT/IDE/simlib/gw2a/prim_sim.v && ./top_tb.out
+gtkwave top_tb.gtkw
+```
+
 ### Other modules
 
 #### [bcd_ripple_carry_adder_tb.sv](bcd_ripple_carry_adder_tb.sv)
