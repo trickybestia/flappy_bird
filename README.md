@@ -48,7 +48,7 @@ Button S1 resets only modules that draw pixels to framebuffer and farther, it do
 
 There is a high-level game model written in Python to debug game logic.
 
-![](doc/images/model.png)
+![](doc/images/model.gif)
 
 To launch it make sure that you have [pygame](https://pypi.org/project/pygame/) installed and run `python -m model`.
 
