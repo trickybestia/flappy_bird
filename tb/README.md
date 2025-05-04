@@ -4,7 +4,7 @@
 
 1. Icarus Verilog.
 2. GTKWave.
-3. bash or other shell to run commands
+3. bash or other shell to run commands.
 
 All commands should be run inside current directory.
 
