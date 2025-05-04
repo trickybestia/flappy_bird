@@ -9,6 +9,7 @@ from .utils import check_rectangles_intersection
 @dataclass
 class CpuInputs:
     btn: bool
+    autoplay: bool
 
 
 @dataclass
@@ -66,7 +67,16 @@ class Cpu:
         )
 
     def _move_bird(self, inputs: CpuInputs):
-        if inputs.btn:
+        closest_pipe_y = (
+            self.pipes[0].y
+            if len(self.pipes) != 0
+            else VER_ACTIVE_PIXELS / 2 - BIRD_HEIGHT / 2
+        )
+        autoplay_btn = (
+            self.bird_y + BIRD_HEIGHT / 2 > closest_pipe_y + PIPE_VER_GAP / 2
+        )
+
+        if inputs.btn or (inputs.autoplay and autoplay_btn):
             if self.bird_y <= 2:
                 self.lose = True
             else:

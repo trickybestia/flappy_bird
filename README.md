@@ -19,11 +19,13 @@ There is a high-level game model written in Python to debug game logic.
 
 ![](doc/images/model.png)
 
-To launch it make sure that you have [pygame](https://pypi.org/project/pygame/) installed and run `python -m model`. Press `SPACE` to make bird fly up.
+To launch it make sure that you have [pygame](https://pypi.org/project/pygame/) installed and run `python -m model`.
+
+Press `SPACE` to make bird fly up and `A` to toggle autoplay (default on).
 
 ### Testbenches
 
-Testbenches are located in [tb](tb) folder. To run them install Icarus Verilog and GTKWave and run following commands in [tb](tb) directory.
+Testbenches are located in [tb](tb) folder. To run them install Icarus Verilog and GTKWave and follow instructions in [tb/README](tb/README.md).
 
 ## Old [single-fsm](https://github.com/trickybestia/flappy_bird/tree/single-fsm) branch
 
