@@ -22,6 +22,8 @@ Logic is splitted between [cpu](src/cpu.sv) and [gpu](src/gpu.sv) modules. GPU d
 5. Connect board to monitor using HDMI.
 6. Press "S1" button once.
 
+![](doc/images/hardware.jpg)
+
 ### Controls
 
 Switch 1 should always be enabled (check [Sipeed Wiki](https://wiki.sipeed.com/hardware/en/tang/tang-primer-20k/primer-20k.html#Dock-ext-board-not-work)).
