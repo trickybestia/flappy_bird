@@ -46,6 +46,17 @@ Button S0 resets almost all modules.
 
 Button S1 resets only modules that draw pixels to framebuffer and farther, it does not reset framebuffer.
 
+### LEDs
+
+| LED | Description |
+|-----|-------------|
+|  0  | Reset (S0)  |
+|  1  | All PLLs are locked |
+|  2  | You lose! (bird crashed) |
+|  3  | Current GPU state is WORK |
+|  4  | CPU-GPU FIFO is full (GPU stuck) |
+|  5  | CPU done sending commands for current frame |
+
 ### Model
 
 There is a high-level game model written in Python to debug game logic.
