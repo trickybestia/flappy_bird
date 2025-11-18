@@ -8,7 +8,15 @@ module top (
     tmds_clk_p,
     tmds_clk_n,
     tmds_data_p,
-    tmds_data_n
+    tmds_data_n,
+
+    lcd_dclk,
+    lcd_hs,
+    lcd_vs,
+    lcd_de,
+    lcd_r,
+    lcd_g,
+    lcd_b
 );
 
 // Parameters
@@ -43,6 +51,14 @@ output [5:0] leds_n;
 output       tmds_clk_p, tmds_clk_n;
 output [2:0] tmds_data_p, tmds_data_n;
 
+output       lcd_dclk;
+output       lcd_hs;   // lcd horizontal synchronization
+output       lcd_vs;   // lcd vertical synchronization
+output       lcd_de;   // lcd data enable
+output [4:0] lcd_r;    // lcd red
+output [5:0] lcd_g;    // lcd green
+output [4:0] lcd_b;    // lcd blue
+
 // Wires/regs
 
 wire [4:0] buttons = ~buttons_n;
@@ -59,11 +75,11 @@ wire clk_rgb;
 wire clk_tmds;
 wire clk_renderer;
 
-wire ce  = all_pll_lock;
+wire ce = all_pll_lock;
 
-wire [7:0] r_test, g_test, b_test; // RGB from video_test
+wire [7:0] r_test, g_test, b_test;       // RGB from video_test
 wire [7:0] r_test_1, g_test_1, b_test_1; // RGB from video_test_1
-reg  [7:0] r, g, b;                // RGB out
+reg  [7:0] r, g, b;                      // RGB out
 wire       hs, vs, de;
 
 reg                         frame_buffer_wr_en;
@@ -91,6 +107,14 @@ wire all_pll_lock = tmds_pll_lock;
 assign leds_n  = ~leds;
 assign leds[0] = buttons[0]; // rst
 assign leds[1] = all_pll_lock;
+
+assign lcd_dclk = clk_rgb;
+assign lcd_hs   = hs;
+assign lcd_vs   = vs;
+assign lcd_de   = de;
+assign lcd_r    = r;
+assign lcd_g    = g;
+assign lcd_b    = b;
 
 // Modules
 
